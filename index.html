@@ -5,18 +5,11 @@
     <!--           ConveyThis Script Start         -->
 <script src="//cdn.conveythis.com/javascript/conveythis.js?api_key=pub_54308d25a69b6dcf4bd9902ab67ae8e9"></script>
 <!--           ConveyThis Script End         -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>reCAPTCHA</title>
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-<body>
-    <form action="your_backend_endpoint.php" method="POST">
-        <div class="g-recaptcha" data-sitekey="6LeadlEsAAAAADLOwazL_Z96UmljBUePTp7zlboS"></div>
-        <br/>
-        <input type="submit" value="Submit">
-    </form>
-</body>
-</html>
+
+<!-- Elfsight Background Music | Untitled Background Music -->
+<script src="https://elfsightcdn.com/platform.js" async></script>
+<div class="elfsight-app-26ceb3f6-1273-4539-9ad6-3e20bca06a3d" data-elfsight-app-lazy></div>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,     initial-scale=1.0">
     <title>Macau Traffic Monitor</title>
@@ -595,20 +588,20 @@
                     <h3><i class="fas fa-clock"></i> Estimated Crossing Duration</h3>
                     
                     <div class="waiting-time-item" data-location="friendship">
-                        <div class="location-name">
-                            <i class="fas fa-archway"></i>
-                            <span>Friendship Bridge</span>
-                        </div>
-                        <div class="time-display time-medium" id="friendship-time">-- min</div>
-                    </div>
-                    
-                    <div class="waiting-time-item" data-location="sai-van">
-                        <div class="location-name">
-                            <i class="fas fa-archway"></i>
-                            <span>Sai Van Bridge</span>
-                        </div>
-                        <div class="time-display time-medium" id="sai-van-time">-- min</div>
-                    </div>
+    <div class="location-name">
+        <i class="fas fa-archway"></i>
+        <span>Friendship Bridge</span>
+    </div>
+    <div class="time-display time-medium" id="friendship-time">-- min</div>
+</div>
+
+<div class="waiting-time-item" data-location="sai-van">
+    <div class="location-name">
+        <i class="fas fa-archway"></i>
+        <span>Sai Van Bridge</span>
+    </div>
+    <div class="time-display time-medium" id="sai-van-time">-- min</div>
+</div>
                     
                     <div class="waiting-time-item" data-location="horta">
                         <div class="location-name">
@@ -650,8 +643,9 @@
                         <div class="time-display time-medium" id="cotai-time">-- min</div>
                     </div>
                 </div>
-                
-
+                                <div class="median-time">
+                    Median Traffic Time:     <span class="median-value" id="median-time">-- min</span>
+                </div>
                 
                 <div class="legend">
                     <div class="legend-title">Traffic Legend</div>
@@ -1074,7 +1068,7 @@
             updateTrafficTimes();
             
             // Update times every second
-            setInterval(updateTrafficTimes,1000);
+            setInterval(updateTrafficTimes,     1000);
         }
         
         // Start the application when the page loads
