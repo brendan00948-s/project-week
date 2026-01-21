@@ -6,6 +6,18 @@
 <script src="//cdn.conveythis.com/javascript/conveythis.js?api_key=pub_54308d25a69b6dcf4bd9902ab67ae8e9"></script>
 <!--           ConveyThis Script End         -->
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>reCAPTCHA</title>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<body>
+    <form action="your_backend_endpoint.php" method="POST">
+        <div class="g-recaptcha" data-sitekey="6LeadlEsAAAAADLOwazL_Z96UmljBUePTp7zlboS"></div>
+        <br/>
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,     initial-scale=1.0">
     <title>Macau Traffic Monitor</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -1062,7 +1074,7 @@
             updateTrafficTimes();
             
             // Update times every second
-            setInterval(updateTrafficTimes,     1000);
+            setInterval(updateTrafficTimes,1000);
         }
         
         // Start the application when the page loads
