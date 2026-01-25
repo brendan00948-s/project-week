@@ -391,27 +391,31 @@
             setTimeout(()=>notification.style.display='none', 3000);
         }
 
-        // Login function
+              // Login function
         function login(){
             const email=emailInput.value.trim();
             const password=passwordInput.value.trim();
             if(!email||!password){showNotification('Please enter both email and password', true);return}
             if(email==='admin@macautraffic.com'&&password==='Admin123'){
                 isAuthenticated=true;
-                authSection.remove(); // ✅ login panel completely removed
+                sessionStorage.setItem('isAuthenticated', 'true');
+                sessionStorage.setItem('activeTab', 'cameras');
+                authSection.remove();
                 camerasSection.style.display='block';
                 showNotification('Login successful!');
             }else{showNotification('Invalid credentials. Please try again.', true)}
         }
-
+        
         // Logout function
         function logout(){
             isAuthenticated=false;
+            sessionStorage.removeItem('isAuthenticated');
+            sessionStorage.removeItem('activeTab');
             camerasSection.style.display='none';
             newsSection.style.display='none';
             emailInput.value='';passwordInput.value='';
             showNotification('You have been logged out');
-            location.reload(); // simple way back to login
+            location.reload();
         }
 
         // Search camera function
