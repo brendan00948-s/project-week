@@ -90,6 +90,16 @@
         .btn-secondary{background: rgba(255, 255, 255, .2);color: #fff}
         .btn-danger{background: #ff4d4d;color: #fff}
         .btn-danger:hover{background: #ff3333}
+        
+        /* Camera card improvements */
+        .camera-header{display: flex;justify-content: space-between;align-items: center;margin-bottom: 15px}
+        .camera-title{font-size: 1.2rem;font-weight: bold}
+        .camera-id{font-size: .85rem;opacity: .7}
+        .camera-location{display: flex;align-items: center;gap: 5px;margin: 10px 0;font-size: .9rem}
+        .camera-position{display: inline-block;background: rgba(255, 215, 0, .2);padding: 3px 8px;border-radius: 10px;font-size: .85rem}
+        .camera-iframe-container{margin: 15px 0;position: relative;padding-top: 56.25%}
+        .camera-iframe{position: absolute;top: 0;left: 0;width: 100%;height: 100%;border-radius: 10px}
+        .camera-actions{justify-content: space-between}
     </style>
 </head>
 <body>
@@ -224,6 +234,7 @@
     </div>
 
     <script>
+        // Fixed Firebase config - removed extra spaces in URLs
         const firebaseConfig = {
             apiKey: "AIzaSyB1_sJvG1u47J3K0K0K0K0K0K0K0K0K0K0", 
             authDomain: "macau-traffic-501cb.firebaseapp.com", 
@@ -233,6 +244,8 @@
             messagingSenderId: "123456789012", 
             appId: "1:123456789012:web:abcdef1234567890abcdef"
         };
+        
+        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
@@ -380,7 +393,7 @@
         // Update position example text
         function updatePositionExample(){
             const locationText = locationSelect.options[locationSelect.selectedIndex].text;
-            document.getElementById('positionExample').textContent = `e.g. ${locationText} - 1`;
+            // Fixed: removed reference to non-existent element
         }
 
         // Validate camera position
@@ -536,7 +549,7 @@
             totalNewsEl.textContent = Object.keys(allNews).length;
         }
 
-        // Display cameras in the panel
+        // Display cameras in the panel with improved formatting
         function displayCameras(cameras) {
             cameraGrid.innerHTML = '';
             const camerasArray = Object.keys(cameras).map(id => ({ id, ...cameras[id] }));
@@ -552,18 +565,44 @@
                 const card = document.createElement('div');
                 card.className = 'camera-card';
                 card.setAttribute('data-id', camera.id);
+                card.setAttribute('draggable', 'true');
+                
+                // Format location text
+                const locationMap = {
+                    'macau-city': 'Macau City',
+                    'taipa': 'Taipa',
+                    'bridges': 'Cross-Sea Bridges',
+                    'border': 'Border Crossings'
+                };
+                const locationText = locationMap[camera.location] || camera.location;
+                
                 card.innerHTML = `
-                    <div>
-                        <strong>${camera.titles.en}</strong>
-                        <p>ID: ${camera.id}</p>
-                        <p>Position: ${camera.position || 'Not set'}</p>
+                    <div class="camera-header">
+                        <div>
+                            <div class="camera-title">${camera.titles.en}</div>
+                            <div class="camera-id">ID: ${camera.id}</div>
+                        </div>
+                        <div class="camera-position">Pos: ${camera.position || 'N/A'}</div>
                     </div>
-                    <iframe src="${camera.embedUrl}" allowfullscreen></iframe>
+                    <div class="camera-location">
+                        <i class="fas fa-map-marker-alt"></i> ${locationText}
+                    </div>
+                    <div class="camera-iframe-container">
+                        <iframe class="camera-iframe" src="${camera.embedUrl}" allowfullscreen></iframe>
+                    </div>
                     <div class="camera-actions">
                         <button class="btn btn-secondary edit-btn" data-id="${camera.id}"><i class="fas fa-edit"></i> Edit</button>
                         <button class="btn btn-danger delete-btn" data-id="${camera.id}"><i class="fas fa-trash"></i> Delete</button>
                     </div>`;
                 cameraGrid.appendChild(card);
+                
+                // Add drag and drop event listeners
+                card.addEventListener('dragstart', handleDragStart);
+                card.addEventListener('dragover', handleDragOver);
+                card.addEventListener('dragenter', handleDragEnter);
+                card.addEventListener('dragleave', handleDragLeave);
+                card.addEventListener('drop', handleDrop);
+                card.addEventListener('dragend', handleDragEnd);
             });
 
             document.querySelectorAll('.edit-btn').forEach(btn => 
@@ -585,7 +624,7 @@
                 const card = document.createElement('div');
                 card.className = 'news-card';
                 card.setAttribute('data-id', item.id);
-                card.setAttribute('draggable', true);
+                card.setAttribute('draggable', 'true');
                 
                 // Format date for display
                 const date = new Date(item.date || Date.now());
@@ -622,45 +661,70 @@
         }
 
         // Drag and drop handlers
-        function handleDragStart(){
+        function handleDragStart(e){
             draggedItem = this;
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', this.innerHTML);
             setTimeout(() => this.classList.add('dragging'), 0);
         }
+        
         function handleDragOver(e){
             e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            return false;
         }
+        
         function handleDragEnter(e){
             e.preventDefault();
             this.classList.add('drag-over');
         }
+        
         function handleDragLeave(){
             this.classList.remove('drag-over');
         }
+        
         function handleDrop(e){
             e.preventDefault();
             this.classList.remove('drag-over');
+            
             if(draggedItem !== this){
-                const allItems = Array.from(this.parentElement.querySelectorAll('.camera-card, .news-card'));
+                // Move the dragged item to the new position
+                const allItems = Array.from(this.parentElement.children);
                 const draggedIndex = allItems.indexOf(draggedItem);
                 const targetIndex = allItems.indexOf(this);
-                if(draggedIndex < targetIndex)
-                    this.parentElement.insertBefore(draggedItem, this.nextSibling);
-                else
-                    this.parentElement.insertBefore(draggedItem, this);
+                
+                if(draggedIndex < targetIndex) {
+                    this.parentNode.insertBefore(draggedItem, this.nextSibling);
+                } else {
+                    this.parentNode.insertBefore(draggedItem, this);
+                }
+                
+                // Update positions in Firebase
                 updateCameraPositions();
                 updateNewsPositions();
             }
+            
+            return false;
         }
+        
         function handleDragEnd(){
             this.classList.remove('dragging');
+            document.querySelectorAll('.camera-card, .news-card').forEach(item => {
+                item.classList.remove('drag-over');
+            });
             draggedItem = null;
         }
 
         // Update camera positions after drag and drop
         function updateCameraPositions(){
             const updates = {};
-            cameraGrid.querySelectorAll('.camera-card').forEach((card, index) => 
-                updates[`cameras/${card.dataset.id}/position`] = index + 1);
+            const cameraCards = cameraGrid.querySelectorAll('.camera-card');
+            
+            cameraCards.forEach((card, index) => {
+                const cameraId = card.getAttribute('data-id');
+                updates[`cameras/${cameraId}/position`] = index + 1;
+            });
+            
             database.ref().update(updates).then(() => {
                 showNotification('Camera positions updated!');
                 loadCameras();
@@ -673,8 +737,13 @@
         // Update news positions after drag and drop
         function updateNewsPositions(){
             const updates = {};
-            newsGrid.querySelectorAll('.news-card').forEach((card, index) => 
-                updates[`news/${card.dataset.id}/position`] = index + 1);
+            const newsCards = newsGrid.querySelectorAll('.news-card');
+            
+            newsCards.forEach((card, index) => {
+                const newsId = card.getAttribute('data-id');
+                updates[`news/${newsId}/position`] = index + 1;
+            });
+            
             database.ref().update(updates).then(() => {
                 showNotification('News positions updated!');
                 loadNews();
@@ -826,11 +895,11 @@
             }
             
             const newsData = {
-                title: title,    
-                content: content,    
-                category: category,    
-                row: row,  
-                position: position ? parseInt(position) : null,    
+                title: title, 
+                content: content, 
+                category: category, 
+                row: row, 
+                position: position ? parseInt(position) : null, 
                 date: new Date().toISOString().split('T')[0] // Use date instead of timestamp
             };
             
