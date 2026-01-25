@@ -2118,95 +2118,106 @@
         // Start the application when the page loads
         window.addEventListener('DOMContentLoaded', init);
         
-        // Load cameras from Firebase
-        function loadCamerasFromFirebase() {
-            // Show loading indicator
-            camerasLoading.style.display = 'flex';
-            
-            // Clear existing camera content
-            document.querySelectorAll('.camera-content').forEach(content => {
-                content.innerHTML = '';
-            });
-            
-            // Load cameras from Firebase
-            const camerasRef = database.ref('cameras');
-            camerasRef.once('value')
-                .then((snapshot) => {
-                    const cameras = snapshot.val();
-                    if (cameras) {
-                        displayCameras(cameras);
-                    } else {
-                        displayNoCamerasMessage();
-                    }
-                    camerasLoading.style.display = 'none';
-                })
-                .catch((error) => {
-                    console.error('Error loading cameras from Firebase: ', error);
-                    displayErrorMessage();
-                    camerasLoading.style.display = 'none';
-                });
-        }
+function loadCamerasFromFirebase() {
+    camerasLoading.style.display = 'flex';
+    
+    document.querySelectorAll('.camera-content').forEach(content => {
+        content.innerHTML = ''; // Clear existing content
+    });
+    
+    const camerasRef = database.ref('cameras');
+    camerasRef.once('value')
+        .then((snapshot) => {
+            const cameras = snapshot.val();
+            if (cameras) {
+                displayCameras(cameras);
+            } else {
+                displayNoCamerasMessage();
+            }
+            camerasLoading.style.display = 'none';
+        })
+        .catch((error) => {
+            console.error('Error loading cameras from Firebase: ', error);
+            displayErrorMessage();
+            camerasLoading.style.display = 'none';
+        });
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        // Remove active class from all tabs and pages
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         
-        // Display cameras in their respective sections
-        function displayCameras(cameras) {
-            // Get current language
-            const currentLang = localStorage.getItem('selectedLanguage') || 'en';
-            
-            // Group cameras by location
-            const groupedCameras = {
-                'macau-city': [],  
-                'taipa': [],  
-                'bridges': [],  
-                'border': []
-            };
-            
-            // Categorize cameras
-            Object.keys(cameras).forEach(cameraId => {
-                const camera = cameras[cameraId];
-                groupedCameras[camera.location].push({
-                    id: cameraId,  
-                    ...camera
-                });
-            });
-            
-            // Display cameras in their respective sections
-            Object.keys(groupedCameras).forEach(location => {
-                const container = document.getElementById(`${location}-content`);
-                const camerasList = groupedCameras[location];
-                
-                if (camerasList.length === 0) {
-                    container.innerHTML = '<p style="text-align: center; padding: 20px;">No cameras available for this location.</p>';
-                    return;
-                }
-                
-                let html = '<div class="camera-grid">';
-                
-                camerasList.forEach(camera => {
-                    // Get translated title based on current language from Firebase data
-                    let cameraTitle = camera.titles.en; // default to English
-                    if (currentLang === 'zh' && camera.titles.zh) {
-                        cameraTitle = camera.titles.zh;
-                    } else if (currentLang === 'pt' && camera.titles.pt) {
-                        cameraTitle = camera.titles.pt;
-                    } else if (currentLang === 'ja' && camera.titles.ja) {
-                        cameraTitle = camera.titles.ja;
-                    }
-                    
-                    html += `
-                        <div class="camera-item">
-                            <div class="camera-title">${cameraTitle}</div>
-                            <div class="camera-container">
-                                <iframe src="${camera.embedUrl}" allowfullscreen></iframe>
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                html += '</div>';
-                container.innerHTML = html;
-            });
-        }
+        // Add active class to clicked tab
+        tab.classList.add('active');
         
+        // Show corresponding page
+        const pageId = tab.getAttribute('data-page') + '-page';
+        document.getElementById(pageId).classList.add('active');
+        
+        // Load cameras if we're on the cameras page
+        if (tab.getAttribute('data-page') === 'cameras') {
+            loadCamerasFromFirebase(); // Load cameras on view
+        }
+    });
+});
+}
+
+function displayCameras(cameras) {
+    const currentLang = localStorage.getItem('selectedLanguage') || 'en';
+
+    // Convert and sort cameras by position
+    const camerasArray = Object.keys(cameras).map(cameraId => ({
+        id: cameraId,
+        ...cameras[cameraId]
+    }));
+    
+    camerasArray.sort((a, b) => (a.position || 0) - (b.position || 0)); // Sort by position
+
+    const groupedCameras = {
+        'macau-city': [],
+        'taipa': [],
+        'bridges': [],
+        'border': []
+    };
+
+    camerasArray.forEach(camera => {
+        groupedCameras[camera.location].push(camera);
+    });
+
+    Object.keys(groupedCameras).forEach(location => {
+        const container = document.getElementById(`${location}-content`);
+        const camerasList = groupedCameras[location];
+
+        if (camerasList.length === 0) {
+            container.innerHTML = '<p>No cameras available for this location.</p>';
+            return;
+        }
+
+        let html = '<div class="camera-grid">';
+        camerasList.forEach(camera => {
+            let cameraTitle = camera.titles.en; // default to English
+            if (currentLang === 'zh' && camera.titles.zh) {
+                cameraTitle = camera.titles.zh;
+            } else if (currentLang === 'pt' && camera.titles.pt) {
+                cameraTitle = camera.titles.pt;
+            } else if (currentLang === 'ja' && camera.titles.ja) {
+                cameraTitle = camera.titles.ja;
+            }
+
+            html += `
+                <div class="camera-item">
+                    <div class="camera-title">${cameraTitle}</div>
+                    <div class="camera-container">
+                        <iframe src="${camera.embedUrl}" allowfullscreen></iframe>
+                    </div>
+                </div>
+            `;
+        });
+
+        html += '</div>';
+        container.innerHTML = html;
+    });
+}
         // Display message when no cameras are found
         function displayNoCamerasMessage() {
             document.querySelectorAll('.camera-content').forEach(content => {
