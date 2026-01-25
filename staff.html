@@ -2,80 +2,80 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,  initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Staff Panel – Macau Traffic Monitor</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <style>
-        *{margin:  0;padding:  0;box-sizing:  border-box;font-family:  'Segoe UI',  Tahoma,  Geneva,  Verdana,  sans-serif}
-        body{background:  linear-gradient(rgba(0,  0,  0,  .8),  rgba(0,  0,  0,  .8)),  url(https: //img1.wsimg.com/isteam/getty/2154404610) no-repeat center center fixed;background-size:  cover;color:  #fff;min-height:  100vh;padding:  20px;overflow-x:  hidden}
-        .container{max-width:  1400px;margin:  0 auto}
-        header{text-align:  center;padding:  20px 0;margin-bottom:  20px;background:  rgba(0,  0,  0,  .6);border-radius:  15px;box-shadow:  0 8px 32px rgba(0,  0,  0,  .3);backdrop-filter:  blur(10px);border:  1px solid rgba(255,  255,  255,  .18)}
-        .logo-container{display:  flex;align-items:  center;justify-content:  center;gap:  15px;margin-bottom:  10px}
-        .logo{width:  80px;height:  80px;background:  linear-gradient(45deg,  #ffd700,  #ff8c00);border-radius:  50%;display:  flex;align-items:  center;justify-content:  center;box-shadow:  0 0 20px rgba(255,  215,  0,  .5)}
-        .logo i{font-size:  40px;color:  #8b0000}
-        h1{font-size:  2.8rem;text-shadow:  0 2px 4px rgba(0,  0,  0,  .5);margin-bottom:  5px}
-        .subtitle{font-size:  1.2rem;opacity:  .9;max-width:  600px;margin:  0 auto 20px}
-        .auth-section{background:  rgba(255,  255,  255,  .1);border-radius:  15px;padding:  25px;margin:  20px 0;box-shadow:  0 8px 32px rgba(0,  0,  0,  .3);backdrop-filter:  blur(10px);border:  1px solid rgba(255,  255,  255,  .18);text-align:  center}
-        .auth-section h2{color:  #ffd700;margin-bottom:  20px}
-        .form-group{margin-bottom:  20px;text-align:  left}
-        .form-group label{display:  block;margin-bottom:  8px;font-weight:  bold}
-        .form-group input,  .form-group select,  .form-group textarea{width:  100%;padding:  12px;border-radius:  8px;border:  1px solid rgba(255,  255,  255,  .3);background:  rgba(0,  0,  0,  .3);color:  #fff;font-size:  1rem}
-        .btn{padding:  12px 25px;border-radius:  30px;border:  none;background:  #ffd700;color:  #000;font-weight:  bold;cursor:  pointer;transition:  all .3s ease;display:  inline-flex;align-items:  center;gap:  8px}
-        .btn: hover{transform:  translateY(-3px);box-shadow:  0 5px 15px rgba(0,  0,  0,  .3)}
-        .btn i{font-size:  1.2rem}
-        .btn-secondary{background:  rgba(255,  255,  255,  .1);color:  #fff}
-        .btn-danger{background:  #ff4d4d;color:  #fff}
-        .btn-success{background:  #4dff4d;color:  #000}
-        .btn-warning{background:  #ff9900;color:  #000}
-        .btn-info{background:  #17a2b8;color:  #fff}
-        .cameras-section,  .news-section{display:  none}
-        .section-title{color:  #ffd700;margin:  25px 0 15px;display:  flex;align-items:  center;gap:  10px}
-        .camera-grid,  .news-grid{display:  grid;grid-template-columns:  repeat(auto-fill,  minmax(300px,  1fr));gap:  20px;margin-top:  20px}
-        .camera-card,  .news-card{background:  rgba(255,  255,  255,  .1);border-radius:  15px;padding:  20px;box-shadow:  0 8px 32px rgba(0,  0,  0,  .3);backdrop-filter:  blur(10px);border:  1px solid rgba(255,  255,  255,  .18);transition:  transform .3s ease;cursor:  move}
-        .camera-card: hover,  .news-card: hover{transform:  translateY(-5px);box-shadow:  0 12px 40px rgba(0,  0,  0,  .4)}
-        .camera-card.dragging,  .news-card.dragging{opacity:  .5;transform:  scale(.98)}
-        .camera-title,  .news-title{font-size:  1.2rem;margin-bottom:  15px;color:  #ffd700;display:  flex;align-items:  center;gap:  10px}
-        .camera-iframe{width:  100%;height:  180px;border-radius:  8px;border:  none;margin:  10px 0;background:  rgba(0,  0,  0,  .3)}
-        .camera-details,  .news-details{margin:  15px 0}
-        .camera-details p,  .news-details p{margin:  8px 0;display:  flex;gap:  10px}
-        .camera-details strong,  .news-details strong{min-width:  100px;display:  inline-block}
-        .camera-actions,  .news-actions{display:  flex;gap:  10px;margin-top:  15px;flex-wrap:  wrap}
-        .camera-actions .btn,  .news-actions .btn{flex:  1;min-width:  120px;justify-content:  center}
-        .modal{display:  none;position:  fixed;top:  0;left:  0;width:  100%;height:  100%;background:  rgba(0,  0,  0,  .8);z-index:  1000;align-items:  center;justify-content:  center}
-        .modal-content{background:  rgba(0,  0,  0,  .9);border-radius:  15px;padding:  30px;width:  90%;max-width:  600px;box-shadow:  0 10px 30px rgba(0,  0,  0,  .5);border:  1px solid rgba(255,  255,  255,  .18);position:  relative;max-height:  90vh;overflow-y:  auto}
-        .close-modal{position:  absolute;top:  20px;right:  20px;font-size:  1.5rem;cursor:  pointer;color:  #ffd700}
-        .modal h2{color:  #ffd700;margin-bottom:  20px;text-align:  center}
-        .form-row{display:  flex;gap:  15px;margin-bottom:  20px}
-        .form-row .form-group{flex:  1}
-        .status-indicator{display:  inline-block;width:  12px;height:  12px;border-radius:  50%;margin-right:  8px}
-        .status-connected{background-color:  #4dff4d;box-shadow:  0 0 8px #4dff4d}
-        .status-disconnected{background-color:  #ff4d4d}
-        .notification{position:  fixed;top:  20px;right:  20px;padding:  15px 25px;border-radius:  8px;background:  rgba(0,  0,  0,  .8);border-left:  4px solid #4dff4d;box-shadow:  0 5px 15px rgba(0,  0,  0,  .3);z-index:  2000;display:  none;animation:  slideIn .3s ease}
-        .notification.error{border-left-color:  #ff4d4d}
-        @keyframes slideIn{from{transform:  translateX(100%);opacity:  0}to{transform:  translateX(0);opacity:  1}}
-        footer{text-align:  center;padding:  20px;margin-top:  30px;font-size:  .9rem;opacity:  .8;background:  rgba(0,  0,  0,  .6);border-radius:  15px;box-shadow:  0 8px 32px rgba(0,  0,  0,  .3);backdrop-filter:  blur(10px);border:  1px solid rgba(255,  255,  255,  .18)}
-        @media(max-width:  768px){.form-row{flex-direction:  column}.camera-grid,  .news-grid{grid-template-columns:  1fr}h1{font-size:  2.2rem}}
-        .stats-container{display:  flex;gap:  20px;margin:  20px 0;flex-wrap:  wrap}
-        .stat-card{background:  rgba(255,  255,  255,  .1);border-radius:  10px;padding:  15px;text-align:  center;flex:  1;min-width:  120px}
-        .stat-value{font-size:  1.8rem;font-weight:  bold;color:  #ffd700;margin:  10px 0}
-        .stat-label{font-size:  .9rem;opacity:  .8}
-        .position-container{display:  flex;gap:  10px;align-items:  center}
-        .position-input{flex:  1}
-        .search-container{margin:  20px 0;display:  flex;gap:  10px}
-        .search-container input{flex:  1}
-        .position-warning{color:  #ff9900;font-size:  .9rem;margin-top:  5px}
-        .suggestion-list{position:  absolute;background:  rgba(0,  0,  0,  .9);border:  1px solid rgba(255,  255,  255,  .3);border-radius:  8px;max-height:  200px;overflow-y:  auto;width:  100%;z-index:  100;display:  none}
-        .suggestion-item{padding:  10px;cursor:  pointer}
-        .suggestion-item: hover{background:  rgba(255,  215,  0,  .2)}
-        .drag-over{border:  2px dashed #ffd700;background:  rgba(255,  215,  0,  .1)}
-        .drag-handle{cursor:  move;padding:  5px;margin-right:  10px;color:  #ffd700}
-        .tabs{display:  flex;gap:  10px;margin:  20px 0;flex-wrap:  wrap}
-        .tab{padding:  12px 25px;border-radius:  30px;background:  rgba(255,  255,  255,  .1);color:  #fff;cursor:  pointer;transition:  all .3s ease}
-        .tab.active{background:  #ffd700;color:  #000}
-        .news-content{white-space:  pre-wrap;margin:  10px 0}
-        .news-meta{display:  flex;gap:  15px;margin-top:  10px;font-size:  0.9rem;opacity:  0.8}
+        *{margin: 0;padding: 0;box-sizing: border-box;font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif}
+        body{background: linear-gradient(rgba(0, 0, 0, .8), rgba(0, 0, 0, .8)), url(https://img1.wsimg.com/isteam/getty/2154404610) no-repeat center center fixed;background-size: cover;color: #fff;min-height: 100vh;padding: 20px;overflow-x: hidden}
+        .container{max-width: 1400px;margin: 0 auto}
+        header{text-align: center;padding: 20px 0;margin-bottom: 20px;background: rgba(0, 0, 0, .6);border-radius: 15px;box-shadow: 0 8px 32px rgba(0, 0, 0, .3);backdrop-filter: blur(10px);border: 1px solid rgba(255, 255, 255, .18)}
+        .logo-container{display: flex;align-items: center;justify-content: center;gap: 15px;margin-bottom: 10px}
+        .logo{width: 80px;height: 80px;background: linear-gradient(45deg, #ffd700, #ff8c00);border-radius: 50%;display: flex;align-items: center;justify-content: center;box-shadow: 0 0 20px rgba(255, 215, 0, .5)}
+        .logo i{font-size: 40px;color: #8b0000}
+        h1{font-size: 2.8rem;text-shadow: 0 2px 4px rgba(0, 0, 0, .5);margin-bottom: 5px}
+        .subtitle{font-size: 1.2rem;opacity: .9;max-width: 600px;margin: 0 auto 20px}
+        .auth-section{background: rgba(255, 255, 255, .1);border-radius: 15px;padding: 25px;margin: 20px 0;box-shadow: 0 8px 32px rgba(0, 0, 0, .3);backdrop-filter: blur(10px);border: 1px solid rgba(255, 255, 255, .18);text-align: center}
+        .auth-section h2{color: #ffd700;margin-bottom: 20px}
+        .form-group{margin-bottom: 20px;text-align: left}
+        .form-group label{display: block;margin-bottom: 8px;font-weight: bold}
+        .form-group input, .form-group select, .form-group textarea{width: 100%;padding: 12px;border-radius: 8px;border: 1px solid rgba(255, 255, 255, .3);background: rgba(0, 0, 0, .3);color: #fff;font-size: 1rem}
+        .btn{padding: 12px 25px;border-radius: 30px;border: none;background: #ffd700;color: #000;font-weight: bold;cursor: pointer;transition: all .3s ease;display: inline-flex;align-items: center;gap: 8px}
+        .btn:hover{transform: translateY(-3px);box-shadow: 0 5px 15px rgba(0, 0, 0, .3)}
+        .btn i{font-size: 1.2rem}
+        .btn-secondary{background: rgba(255, 255, 255, .1);color: #fff}
+        .btn-danger{background: #ff4d4d;color: #fff}
+        .btn-success{background: #4dff4d;color: #000}
+        .btn-warning{background: #ff9900;color: #000}
+        .btn-info{background: #17a2b8;color: #fff}
+        .cameras-section, .news-section{display: none}
+        .section-title{color: #ffd700;margin: 25px 0 15px;display: flex;align-items: center;gap: 10px}
+        .camera-grid, .news-grid{display: grid;grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));gap: 20px;margin-top: 20px}
+        .camera-card, .news-card{background: rgba(255, 255, 255, .1);border-radius: 15px;padding: 20px;box-shadow: 0 8px 32px rgba(0, 0, 0, .3);backdrop-filter: blur(10px);border: 1px solid rgba(255, 255, 255, .18);transition: transform .3s ease;cursor: move}
+        .camera-card:hover, .news-card:hover{transform: translateY(-5px);box-shadow: 0 12px 40px rgba(0, 0, 0, .4)}
+        .camera-card.dragging, .news-card.dragging{opacity: .5;transform: scale(.98)}
+        .camera-title, .news-title{font-size: 1.2rem;margin-bottom: 15px;color: #ffd700;display: flex;align-items: center;gap: 10px}
+        .camera-iframe{width: 100%;height: 180px;border-radius: 8px;border: none;margin: 10px 0;background: rgba(0, 0, 0, .3)}
+        .camera-details, .news-details{margin: 15px 0}
+        .camera-details p, .news-details p{margin: 8px 0;display: flex;gap: 10px}
+        .camera-details strong, .news-details strong{min-width: 100px;display: inline-block}
+        .camera-actions, .news-actions{display: flex;gap: 10px;margin-top: 15px;flex-wrap: wrap}
+        .camera-actions .btn, .news-actions .btn{flex: 1;min-width: 120px;justify-content: center}
+        .modal{display: none;position: fixed;top: 0;left: 0;width: 100%;height: 100%;background: rgba(0, 0, 0, .8);z-index: 1000;align-items: center;justify-content: center}
+        .modal-content{background: rgba(0, 0, 0, .9);border-radius: 15px;padding: 30px;width: 90%;max-width: 600px;box-shadow: 0 10px 30px rgba(0, 0, 0, .5);border: 1px solid rgba(255, 255, 255, .18);position: relative;max-height: 90vh;overflow-y: auto}
+        .close-modal{position: absolute;top: 20px;right: 20px;font-size: 1.5rem;cursor: pointer;color: #ffd700}
+        .modal h2{color: #ffd700;margin-bottom: 20px;text-align: center}
+        .form-row{display: flex;gap: 15px;margin-bottom: 20px}
+        .form-row .form-group{flex: 1}
+        .status-indicator{display: inline-block;width: 12px;height: 12px;border-radius: 50%;margin-right: 8px}
+        .status-connected{background-color: #4dff4d;box-shadow: 0 0 8px #4dff4d}
+        .status-disconnected{background-color: #ff4d4d}
+        .notification{position: fixed;top: 20px;right: 20px;padding: 15px 25px;border-radius: 8px;background: rgba(0, 0, 0, .8);border-left: 4px solid #4dff4d;box-shadow: 0 5px 15px rgba(0, 0, 0, .3);z-index: 2000;display: none;animation: slideIn .3s ease}
+        .notification.error{border-left-color: #ff4d4d}
+        @keyframes slideIn{from{transform: translateX(100%);opacity: 0}to{transform: translateX(0);opacity: 1}}
+        footer{text-align: center;padding: 20px;margin-top: 30px;font-size: .9rem;opacity: .8;background: rgba(0, 0, 0, .6);border-radius: 15px;box-shadow: 0 8px 32px rgba(0, 0, 0, .3);backdrop-filter: blur(10px);border: 1px solid rgba(255, 255, 255, .18)}
+        @media(max-width: 768px){.form-row{flex-direction: column}.camera-grid, .news-grid{grid-template-columns: 1fr}h1{font-size: 2.2rem}}
+        .stats-container{display: flex;gap: 20px;margin: 20px 0;flex-wrap: wrap}
+        .stat-card{background: rgba(255, 255, 255, .1);border-radius: 10px;padding: 15px;text-align: center;flex: 1;min-width: 120px}
+        .stat-value{font-size: 1.8rem;font-weight: bold;color: #ffd700;margin: 10px 0}
+        .stat-label{font-size: .9rem;opacity: .8}
+        .position-container{display: flex;gap: 10px;align-items: center}
+        .position-input{flex: 1}
+        .search-container{margin: 20px 0;display: flex;gap: 10px}
+        .search-container input{flex: 1}
+        .position-warning{color: #ff9900;font-size: .9rem;margin-top: 5px}
+        .suggestion-list{position: absolute;background: rgba(0, 0, 0, .9);border: 1px solid rgba(255, 255, 255, .3);border-radius: 8px;max-height: 200px;overflow-y: auto;width: 100%;z-index: 100;display: none}
+        .suggestion-item{padding: 10px;cursor: pointer}
+        .suggestion-item:hover{background: rgba(255, 215, 0, .2)}
+        .drag-over{border: 2px dashed #ffd700;background: rgba(255, 215, 0, .1)}
+        .drag-handle{cursor: move;padding: 5px;margin-right: 10px;color: #ffd700}
+        .tabs{display: flex;gap: 10px;margin: 20px 0;flex-wrap: wrap}
+        .tab{padding: 12px 25px;border-radius: 30px;background: rgba(255, 255, 255, .1);color: #fff;cursor: pointer;transition: all .3s ease}
+        .tab.active{background: #ffd700;color: #000}
+        .news-content{white-space: pre-wrap;margin: 10px 0}
+        .news-meta{display: flex;gap: 15px;margin-top: 10px;font-size: 0.9rem;opacity: 0.8}
     </style>
 </head>
 <body>
@@ -92,11 +92,11 @@
             <div class="form-group"><label for="email">Email</label><input type="email" id="email" placeholder="Enter your staff email"></div>
             <div class="form-group"><label for="password">Password</label><input type="password" id="password" placeholder="Enter your password"></div>
             <button class="btn" id="loginBtn"><i class="fas fa-sign-in-alt"></i> Login</button>
-            <p style="margin-top:  15px;color:  #ffd700"><i class="fas fa-info-circle"></i> Get away and go lost if you're not staff</p>
+            <p style="margin-top: 15px;color: #ffd700"><i class="fas fa-info-circle"></i> Get away and go lost if you're not staff</p>
         </div>
 
         <div class="cameras-section" id="camerasSection">
-            <div style="display:  flex;justify-content:  space-between;align-items:  center">
+            <div style="display: flex;justify-content: space-between;align-items: center">
                 <h2 class="section-title"><i class="fas fa-video"></i> Live Camera Management</h2>
                 <div><span class="status-indicator" id="statusIndicator"></span><span id="statusText">Connected to Firebase</span></div>
             </div>
@@ -107,7 +107,7 @@
             </div>
             
             <div class="search-container"><input type="text" id="searchCamera" placeholder="Search camera by ID..."><button class="btn" id="searchBtn"><i class="fas fa-search"></i> Search</button></div>
-            <div style="display:  flex;gap:  15px;margin:  20px 0;flex-wrap:  wrap">
+            <div style="display: flex;gap: 15px;margin: 20px 0;flex-wrap: wrap">
                 <button class="btn" id="addCameraBtn"><i class="fas fa-plus"></i> Add New Camera</button>
                 <button class="btn btn-secondary" id="refreshBtn"><i class="fas fa-sync-alt"></i> Refresh Data</button>
                 <button class="btn btn-danger" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
@@ -117,7 +117,7 @@
         </div>
 
         <div class="news-section" id="newsSection">
-            <div style="display:  flex;justify-content:  space-between;align-items:  center">
+            <div style="display: flex;justify-content: space-between;align-items: center">
                 <h2 class="section-title"><i class="fas fa-newspaper"></i> News Management</h2>
                 <div><span class="status-indicator" id="newsStatusIndicator"></span><span id="newsStatusText">Connected to Firebase</span></div>
             </div>
@@ -128,7 +128,7 @@
             </div>
             
             <div class="search-container"><input type="text" id="searchNews" placeholder="Search news by ID..."><button class="btn" id="searchNewsBtn"><i class="fas fa-search"></i> Search</button></div>
-            <div style="display:  flex;gap:  15px;margin:  20px 0;flex-wrap:  wrap">
+            <div style="display: flex;gap: 15px;margin: 20px 0;flex-wrap: wrap">
                 <button class="btn" id="addNewsBtn"><i class="fas fa-plus"></i> Add New News</button>
                 <button class="btn btn-secondary" id="refreshNewsBtn"><i class="fas fa-sync-alt"></i> Refresh Data</button>
                 <button class="btn btn-danger" id="logoutNewsBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
@@ -141,13 +141,13 @@
             <div class="modal-content">
                 <span class="close-modal" id="closeModal">×</span>
                 <h2 id="modalTitle">Add New Camera</h2>
-                <div class="form-group"><label for="cameraId">Camera ID</label><div style="position:  relative"><input type="text" id="cameraId" placeholder="Unique identifier (e.g.,  camera-001)"><div class="suggestion-list" id="suggestionList"></div></div></div>
+                <div class="form-group"><label for="cameraId">Camera ID</label><div style="position: relative"><input type="text" id="cameraId" placeholder="Unique identifier (e.g., camera-001)"><div class="suggestion-list" id="suggestionList"></div></div></div>
                 <div class="form-row"><div class="form-group"><label for="englishTitle">English Title</label><input type="text" id="englishTitle" placeholder="Camera title in English"></div><div class="form-group"><label for="chineseTitle">Chinese Title</label><input type="text" id="chineseTitle" placeholder="Camera title in Chinese"></div></div>
                 <div class="form-row"><div class="form-group"><label for="portugueseTitle">Portuguese Title</label><input type="text" id="portugueseTitle" placeholder="Camera title in Portuguese"></div><div class="form-group"><label for="japaneseTitle">Japanese Title</label><input type="text" id="japaneseTitle" placeholder="Camera title in Japanese"></div></div>
-                <div class="form-group"><label for="embedUrl">Embed URL</label><input type="text" id="embedUrl" placeholder="Live stream URL (e.g.,  https: //...)"></div>
+                <div class="form-group"><label for="embedUrl">Embed URL</label><input type="text" id="embedUrl" placeholder="Live stream URL (e.g., https://...)"></div>
                 <div class="form-group"><label for="location">Location</label><select id="location" class="form-control"><option value="macau-city">Macau City</option><option value="taipa">Taipa</option><option value="bridges">Cross-Sea Bridges</option><option value="border">Border Crossings</option></select></div>
-                <div class="form-group"><label for="position">Position</label><div class="position-container"><input type="number" id="position" class="position-input" min="1" placeholder="Position number"><span id="positionExample" style="opacity:  .7">e.g. Macau City - 1</span></div><div id="positionWarning" class="position-warning" style="display:  none"></div></div>
-                <div style="display:  flex;gap:  15px;margin-top:  25px"><button class="btn" id="saveCameraBtn"><i class="fas fa-save"></i> Save Camera</button><button class="btn btn-secondary" id="cancelBtn"><i class="fas fa-times"></i> Cancel</button></div>
+                <div class="form-group"><label for="position">Position</label><div class="position-container"><input type="number" id="position" class="position-input" min="1" placeholder="Position number"><span id="positionExample" style="opacity: .7">e.g. Macau City - 1</span></div><div id="positionWarning" class="position-warning" style="display: none"></div></div>
+                <div style="display: flex;gap: 15px;margin-top: 25px"><button class="btn" id="saveCameraBtn"><i class="fas fa-save"></i> Save Camera</button><button class="btn btn-secondary" id="cancelBtn"><i class="fas fa-times"></i> Cancel</button></div>
             </div>
         </div>
 
@@ -158,7 +158,7 @@
                 
                 <div class="form-group">
                     <label for="newsId">News ID</label>
-                    <input type="text" id="newsId" placeholder="Unique identifier (e.g.,  news-001)">
+                    <input type="text" id="newsId" placeholder="Unique identifier (e.g., news-001)">
                 </div>
                 
                 <div class="form-group">
@@ -196,10 +196,10 @@
                 <div class="form-group">
                     <label for="newsPosition">Position</label>
                     <input type="number" id="newsPosition" min="1" placeholder="Position number">
-                    <div id="newsPositionExample" style="opacity:  .7; margin-top:  5px">e.g. Position 1 will appear first</div>
+                    <div id="newsPositionExample" style="opacity: .7; margin-top: 5px">e.g. Position 1 will appear first</div>
                 </div>
                 
-                <div style="display:  flex; gap:  15px; margin-top:  25px">
+                <div style="display: flex; gap: 15px; margin-top: 25px">
                     <button class="btn" id="saveNewsBtn"><i class="fas fa-save"></i> Save News</button>
                     <button class="btn btn-secondary" id="cancelNewsBtn"><i class="fas fa-times"></i> Cancel</button>
                 </div>
@@ -207,18 +207,18 @@
         </div>
 
         <div class="notification" id="notification"><p id="notificationMessage">Operation completed successfully!</p></div>
-        <footer><p>Macau Traffic Monitor Staff Panel © 2026</p><p>Data Source:  Firebase Realtime Database</p></footer>
+        <footer><p>Macau Traffic Monitor Staff Panel © 2026</p><p>Data Source: Firebase Realtime Database</p></footer>
     </div>
 
     <script>
         const firebaseConfig={
-            apiKey:  "AIzaSyB1_sJvG1u47J3K0K0K0K0K0K0K0K0K0K0",   
-            authDomain:  "macau-traffic-501cb.firebaseapp.com",   
-            databaseURL:  "https: //macau-traffic-501cb-default-rtdb.firebaseio.com",   
-            projectId:  "macau-traffic-501cb",   
-            storageBucket:  "macau-traffic-501cb.appspot.com",   
-            messagingSenderId:  "123456789012",   
-            appId:  "1: 123456789012: web: abcdef1234567890abcdef"
+            apiKey: "AIzaSyB1_sJvG1u47J3K0K0K0K0K0K0K0K0K0K0",  
+            authDomain: "macau-traffic-501cb.firebaseapp.com",  
+            databaseURL: "https://macau-traffic-501cb-default-rtdb.firebaseio.com",  
+            projectId: "macau-traffic-501cb",  
+            storageBucket: "macau-traffic-501cb.appspot.com",  
+            messagingSenderId: "123456789012",  
+            appId: "1:123456789012:web:abcdef1234567890abcdef"
         };
         firebase.initializeApp(firebaseConfig);
         const database=firebase.database();
@@ -297,7 +297,7 @@
             
             // Add event listeners for tabs
             document.querySelectorAll('.tab').forEach(tab => {
-                tab.addEventListener('click',  () => {
+                tab.addEventListener('click', () => {
                     const tabType = tab.getAttribute('data-tab');
                     
                     // Update active tab
@@ -316,10 +316,10 @@
             });
             
             // Camera form event listeners
-            locationSelect.addEventListener('change',  updatePositionExample);
-            positionInput.addEventListener('input',  validatePosition);
-            cameraIdInput.addEventListener('input',  showSuggestions);
-            document.addEventListener('click',  e=>{if(!e.target.closest('#cameraId'))suggestionList.style.display='none'});
+            locationSelect.addEventListener('change', updatePositionExample);
+            positionInput.addEventListener('input', validatePosition);
+            cameraIdInput.addEventListener('input', showSuggestions);
+            document.addEventListener('click', e=>{if(!e.target.closest('#cameraId'))suggestionList.style.display='none'});
         }
 
         // Show suggestions for camera IDs
@@ -327,11 +327,11 @@
             const input=cameraIdInput.value.toLowerCase();
             suggestionList.innerHTML='';
             if(input.length<2){suggestionList.style.display='none';return}
-            const suggestions=Object.keys(allCameras).filter(id=>id.toLowerCase().includes(input)).slice(0,  5);
+            const suggestions=Object.keys(allCameras).filter(id=>id.toLowerCase().includes(input)).slice(0, 5);
             if(suggestions.length>0){
                 suggestions.forEach(id=>{
                     const item=document.createElement('div');item.className='suggestion-item';item.textContent=id;
-                    item.addEventListener('click',  ()=>{cameraIdInput.value=id;suggestionList.style.display='none';fillFormWithCameraData(id)});
+                    item.addEventListener('click', ()=>{cameraIdInput.value=id;suggestionList.style.display='none';fillFormWithCameraData(id)});
                     suggestionList.appendChild(item);
                 });suggestionList.style.display='block';
             }else{suggestionList.style.display='none'}
@@ -370,38 +370,38 @@
                 if(camera.location===location&&camera.position===positionNum&&cameraId!==currentEditingCameraId)conflictCameraId=cameraId;
             });
             if(conflictCameraId){
-                positionWarning.textContent=`Position ${positionNum} is already occupied by camera ID:  ${conflictCameraId}. Saving will move that camera to the back.`;
+                positionWarning.textContent=`Position ${positionNum} is already occupied by camera ID: ${conflictCameraId}. Saving will move that camera to the back.`;
                 positionWarning.style.display='block';
             }else{positionWarning.style.display='none'}
         }
 
         // Update connection status indicator
         function updateConnectionStatus(connected){
-            statusIndicator.className=connected?'status-indicator status-connected':  'status-indicator status-disconnected';
-            statusText.textContent=connected?'Connected to Firebase':  'Disconnected from Firebase';
-            newsStatusIndicator.className=connected?'status-indicator status-connected':  'status-indicator status-disconnected';
-            newsStatusText.textContent=connected?'Connected to Firebase':  'Disconnected from Firebase';
+            statusIndicator.className=connected?'status-indicator status-connected': 'status-indicator status-disconnected';
+            statusText.textContent=connected?'Connected to Firebase': 'Disconnected from Firebase';
+            newsStatusIndicator.className=connected?'status-indicator status-connected': 'status-indicator status-disconnected';
+            newsStatusText.textContent=connected?'Connected to Firebase': 'Disconnected from Firebase';
         }
 
         // Show notification message
-        function showNotification(message,  isError=false){
+        function showNotification(message, isError=false){
             document.getElementById('notificationMessage').textContent=message;
-            notification.className=isError?'notification error':  'notification';
+            notification.className=isError?'notification error': 'notification';
             notification.style.display='block';
-            setTimeout(()=>notification.style.display='none',  3000);
+            setTimeout(()=>notification.style.display='none', 3000);
         }
 
         // Login function
         function login(){
             const email=emailInput.value.trim();
             const password=passwordInput.value.trim();
-            if(!email||!password){showNotification('Please enter both email and password',  true);return}
+            if(!email||!password){showNotification('Please enter both email and password', true);return}
             if(email==='admin@macautraffic.com'&&password==='Admin123'){
                 isAuthenticated=true;
                 authSection.remove(); // ✅ login panel completely removed
                 camerasSection.style.display='block';
                 showNotification('Login successful!');
-            }else{showNotification('Invalid credentials. Please try again.',  true)}
+            }else{showNotification('Invalid credentials. Please try again.', true)}
         }
 
         // Logout function
@@ -417,37 +417,37 @@
         // Search camera function
         function searchCamera(){
             const searchTerm=searchCameraInput.value.trim().toLowerCase();
-            if(!searchTerm){showNotification('Please enter a camera ID to search',  true);return}
+            if(!searchTerm){showNotification('Please enter a camera ID to search', true);return}
             const foundCameraId=Object.keys(allCameras).find(id=>id.toLowerCase().includes(searchTerm));
-            foundCameraId?editCamera(foundCameraId):  showNotification('Camera not found',  true);
+            foundCameraId?editCamera(foundCameraId): showNotification('Camera not found', true);
         }
 
         // Search news function
         function searchNews(){
             const searchTerm=searchNewsInput.value.trim().toLowerCase();
-            if(!searchTerm){showNotification('Please enter a news ID to search',  true);return}
+            if(!searchTerm){showNotification('Please enter a news ID to search', true);return}
             const foundNewsId=Object.keys(allNews).find(id=>id.toLowerCase().includes(searchTerm));
-            foundNewsId?editNews(foundNewsId):  showNotification('News item not found',  true);
+            foundNewsId?editNews(foundNewsId): showNotification('News item not found', true);
         }
 
         // Load cameras from Firebase
         function loadCameras(){
-            cameraGrid.innerHTML='<p style="text-align:  center;width:  100%"><i class="fas fa-spinner fa-spin"></i> Loading cameras...</p>';
+            cameraGrid.innerHTML='<p style="text-align: center;width: 100%"><i class="fas fa-spinner fa-spin"></i> Loading cameras...</p>';
             database.ref('cameras').once('value').then(snapshot=>{
                 const cameras=snapshot.val();
                 if(cameras){allCameras=cameras;displayCameras(cameras);updateCameraStats()}
-                else{cameraGrid.innerHTML='<p style="text-align:  center;width:  100%">No cameras found</p>';allCameras={};updateCameraStats()}
-            }).catch(err=>{console.error(err);cameraGrid.innerHTML='<p style="text-align:  center;width:  100%;color:  #ff4d4d">Error loading cameras.</p>';showNotification('Failed to load cameras',  true)});
+                else{cameraGrid.innerHTML='<p style="text-align: center;width: 100%">No cameras found</p>';allCameras={};updateCameraStats()}
+            }).catch(err=>{console.error(err);cameraGrid.innerHTML='<p style="text-align: center;width: 100%;color: #ff4d4d">Error loading cameras.</p>';showNotification('Failed to load cameras', true)});
         }
 
         // Load news from Firebase
         function loadNews(){
-            newsGrid.innerHTML='<p style="text-align:  center;width:  100%"><i class="fas fa-spinner fa-spin"></i> Loading news...</p>';
+            newsGrid.innerHTML='<p style="text-align: center;width: 100%"><i class="fas fa-spinner fa-spin"></i> Loading news...</p>';
             database.ref('news').once('value').then(snapshot=>{
                 const news=snapshot.val();
                 if(news){allNews=news;displayNews(news);updateNewsStats()}
-                else{newsGrid.innerHTML='<p style="text-align:  center;width:  100%">No news found</p>';allNews={};updateNewsStats()}
-            }).catch(err=>{console.error(err);newsGrid.innerHTML='<p style="text-align:  center;width:  100%;color:  #ff4d4d">Error loading news.</p>';showNotification('Failed to load news',  true)});
+                else{newsGrid.innerHTML='<p style="text-align: center;width: 100%">No news found</p>';allNews={};updateNewsStats()}
+            }).catch(err=>{console.error(err);newsGrid.innerHTML='<p style="text-align: center;width: 100%;color: #ff4d4d">Error loading news.</p>';showNotification('Failed to load news', true)});
         }
 
         // Update camera statistics
@@ -456,7 +456,7 @@
         // Update news statistics
         function updateNewsStats(){totalNewsEl.textContent=Object.keys(allNews).length}
 
-  // Display cameras in the panel
+     // Display cameras in the panel
 function displayCameras(cameras) {
     cameraGrid.innerHTML = '';
     const camerasArray = Object.keys(cameras).map(id => ({ id, ...cameras[id] }));
@@ -489,26 +489,60 @@ function displayCameras(cameras) {
     document.querySelectorAll('.edit-btn').forEach(btn => btn.addEventListener('click', () => editCamera(btn.dataset.id)));
     document.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', () => deleteCamera(btn.dataset.id)));
 }
-        // Display news items
-        function displayNews(news){
-            newsGrid.innerHTML='';
-            const newsArray=Object.keys(news).map(id=>({id,  ...news[id]}));
-            newsArray.sort((a,  b)=>{if(a.position==null)return 1;if(b.position==null)return -1;return a.position-b.position});
-            newsArray.forEach(item=>{
-                const card=document.createElement('div');card.className='news-card';card.setAttribute('data-id',  item.id);card.setAttribute('draggable',  true);
-                
+     function displayNews(newsData) {
+    newsGrid.innerHTML = '';
+    const newsArray = Object.keys(newsData).map(id => ({ id, ...newsData[id] }));
+
+    // Sort news items based on position
+    newsArray.sort((a, b) => {
+        if (a.position == null) return 1; // Place news items without position at the end
+        if (b.position == null) return -1;
+        return a.position - b.position; // Ascending order
+    });
+
+    newsArray.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'news-card';
+        card.setAttribute('data-id', item.id);
+        
+        // Format date for display
+        const date = new Date(item.date || Date.now());
+        const formattedDate = date.toLocaleDateString();
+
+        card.innerHTML = `
+            <div class="news-title"><i class="fas fa-newspaper"></i> ${item.title}</div>
+            <div class="news-content">${item.content.substring(0, 150)}${item.content.length > 150 ? '...' : ''}</div>
+            <div class="news-details">
+                <p><strong>ID:</strong> ${item.id}</p>
+                <p><strong>Category:</strong> ${item.category}</p>
+                <p><strong>Row:</strong> ${item.row || 'Not set'}</p>
+                <p><strong>Position:</strong> ${item.position || 'Not set'}</p>
+            </div>
+            <div class="news-meta"><span>${formattedDate}</span></div>
+            <div class="news-actions">
+                <button class="btn btn-secondary edit-news-btn" data-id="${item.id}"><i class="fas fa-edit"></i> Edit</button>
+                <button class="btn btn-danger delete-news-btn" data-id="${item.id}"><i class="fas fa-trash"></i> Delete</button>
+            </div>`;
+        
+        newsGrid.appendChild(card);
+    });
+
+    // Attach event listeners for edit and delete buttons
+    document.querySelectorAll('.edit-news-btn').forEach(btn => btn.addEventListener('click', () => editNews(btn.dataset.id)));
+    document.querySelectorAll('.delete-news-btn').forEach(btn => btn.addEventListener('click', () => deleteNews(btn.dataset.id)));
+}
                 // Format date for display
                 const date = new Date(item.date || Date.now());
                 const formattedDate = date.toLocaleDateString();
                 
                 card.innerHTML=`
                     <div class="news-title"><i class="fas fa-grip-vertical drag-handle"></i><i class="fas fa-newspaper"></i> ${item.title}</div>
-                    <div class="news-content">${item.content.substring(0,  150)}${item.content.length > 150 ? '...' :  ''}</div>
+                    <div class="news-content">${item.content.substring(0, 150)}${item.content.length > 150 ? '...' : ''}</div>
                     <div class="news-details">
-                        <p><strong>ID:  </strong> ${item.id}</p>
-                        <p><strong>Category:  </strong> ${item.category}</p>
-                        <p><strong>Row:  </strong> ${item.row||'Not set'}</p>
-                        <p><strong>Position:  </strong> ${item.position||'Not set'}</p>
+                        <p><strong>ID: </strong> ${item.id}</p>
+                        <p><strong>Category: </strong> ${item.category}</p>
+                        <p><strong>Row: </strong> ${item.row||'Not set'}</p>
+                        <p><strong>Position: </strong> ${item.position||'Not set'}</p>
                     </div>
                     <div class="news-meta">
                         <span><i class="far fa-calendar"></i> ${formattedDate}</span>
@@ -518,32 +552,32 @@ function displayCameras(cameras) {
                         <button class="btn btn-danger delete-news-btn" data-id="${item.id}"><i class="fas fa-trash"></i> Delete</button>
                     </div>`;
                 newsGrid.appendChild(card);
-                card.addEventListener('dragstart',  handleDragStart);card.addEventListener('dragover',  handleDragOver);card.addEventListener('dragenter',  handleDragEnter);card.addEventListener('dragleave',  handleDragLeave);card.addEventListener('drop',  handleDrop);card.addEventListener('dragend',  handleDragEnd);
+                card.addEventListener('dragstart', handleDragStart);card.addEventListener('dragover', handleDragOver);card.addEventListener('dragenter', handleDragEnter);card.addEventListener('dragleave', handleDragLeave);card.addEventListener('drop', handleDrop);card.addEventListener('dragend', handleDragEnd);
             });
-            document.querySelectorAll('.edit-news-btn').forEach(btn=>btn.addEventListener('click',  ()=>editNews(btn.dataset.id)));
-            document.querySelectorAll('.delete-news-btn').forEach(btn=>btn.addEventListener('click',  ()=>deleteNews(btn.dataset.id)));
+            document.querySelectorAll('.edit-news-btn').forEach(btn=>btn.addEventListener('click', ()=>editNews(btn.dataset.id)));
+            document.querySelectorAll('.delete-news-btn').forEach(btn=>btn.addEventListener('click', ()=>deleteNews(btn.dataset.id)));
         }
 
         // Drag and drop handlers
-        function handleDragStart(){draggedItem=this;setTimeout(()=>this.classList.add('dragging'),  0)}
+        function handleDragStart(){draggedItem=this;setTimeout(()=>this.classList.add('dragging'), 0)}
         function handleDragOver(e){e.preventDefault()}
         function handleDragEnter(e){e.preventDefault();this.classList.add('drag-over')}
         function handleDragLeave(){this.classList.remove('drag-over')}
-        function handleDrop(e){e.preventDefault();this.classList.remove('drag-over');if(draggedItem!==this){const allItems=Array.from(this.parentElement.querySelectorAll('.camera-card,  .news-card'));const draggedIndex=allItems.indexOf(draggedItem);const targetIndex=allItems.indexOf(this);if(draggedIndex<targetIndex)this.parentElement.insertBefore(draggedItem,  this.nextSibling);else this.parentElement.insertBefore(draggedItem,  this);updateCameraPositions();updateNewsPositions()}}
+        function handleDrop(e){e.preventDefault();this.classList.remove('drag-over');if(draggedItem!==this){const allItems=Array.from(this.parentElement.querySelectorAll('.camera-card, .news-card'));const draggedIndex=allItems.indexOf(draggedItem);const targetIndex=allItems.indexOf(this);if(draggedIndex<targetIndex)this.parentElement.insertBefore(draggedItem, this.nextSibling);else this.parentElement.insertBefore(draggedItem, this);updateCameraPositions();updateNewsPositions()}}
         function handleDragEnd(){this.classList.remove('dragging');draggedItem=null}
 
         // Update camera positions after drag and drop
         function updateCameraPositions(){
             const updates={};
-            cameraGrid.querySelectorAll('.camera-card').forEach((card,  index)=>updates[`cameras/${card.dataset.id}/position`]=index+1);
-            database.ref().update(updates).then(()=>{showNotification('Camera positions updated!');loadCameras()}).catch(err=>{console.error(err);showNotification('Failed to update positions',  true)})
+            cameraGrid.querySelectorAll('.camera-card').forEach((card, index)=>updates[`cameras/${card.dataset.id}/position`]=index+1);
+            database.ref().update(updates).then(()=>{showNotification('Camera positions updated!');loadCameras()}).catch(err=>{console.error(err);showNotification('Failed to update positions', true)})
         }
 
         // Update news positions after drag and drop
         function updateNewsPositions(){
             const updates={};
-            newsGrid.querySelectorAll('.news-card').forEach((card,  index)=>updates[`news/${card.dataset.id}/position`]=index+1);
-            database.ref().update(updates).then(()=>{showNotification('News positions updated!');loadNews()}).catch(err=>{console.error(err);showNotification('Failed to update positions',  true)})
+            newsGrid.querySelectorAll('.news-card').forEach((card, index)=>updates[`news/${card.dataset.id}/position`]=index+1);
+            database.ref().update(updates).then(()=>{showNotification('News positions updated!');loadNews()}).catch(err=>{console.error(err);showNotification('Failed to update positions', true)})
         }
 
         // Open add camera modal
@@ -563,8 +597,8 @@ function displayCameras(cameras) {
                 const camera=snapshot.val();
                 if(camera){
                     cameraIdInput.value=cameraId;cameraIdInput.disabled=true;englishTitleInput.value=camera.titles.en;chineseTitleInput.value=camera.titles.zh;portugueseTitleInput.value=camera.titles.pt;japaneseTitleInput.value=camera.titles.ja;embedUrlInput.value=camera.embedUrl;locationSelect.value=camera.location;positionInput.value=camera.position||'';positionWarning.style.display='none';updatePositionExample();validatePosition();cameraModal.style.display='flex';
-                }else{showNotification('Camera not found',  true)}
-            }).catch(err=>{console.error(err);showNotification('Failed to load camera',  true)})
+                }else{showNotification('Camera not found', true)}
+            }).catch(err=>{console.error(err);showNotification('Failed to load camera', true)})
         }
 
         // Edit news
@@ -574,11 +608,11 @@ function displayCameras(cameras) {
                 const news=snapshot.val();
                 if(news){
                     newsIdInput.value=newsId;newsIdInput.disabled=true;newsTitleInput.value=news.title;newsContentInput.value=news.content;newsCategorySelect.value=news.category;newsRowSelect.value=news.row||'1';newsPositionInput.value=news.position||'';newsModal.style.display='flex';
-                }else{showNotification('News item not found',  true)}
-            }).catch(err=>{console.error(err);showNotification('Failed to load news item',  true)})
+                }else{showNotification('News item not found', true)}
+            }).catch(err=>{console.error(err);showNotification('Failed to load news item', true)})
         }
 
-function saveCamera() {
+   function saveCamera() {
     const cameraId = cameraIdInput.value.trim();
     const englishTitle = englishTitleInput.value.trim();
     const chineseTitle = chineseTitleInput.value.trim();
@@ -618,76 +652,45 @@ function saveCamera() {
             showNotification('Failed to save camera', true);
         });
 }
-            // Create camera data object
-            const cameraData={
-                titles: {en: englishTitle, zh: chineseTitle, pt: portugueseTitle, ja: japaneseTitle}, 
-                embedUrl: embedUrl, 
-                location: location, 
-                position: position ? parseInt(position) : null
-            };
-            
-            // Create updates object to reposition ALL cameras
-            const updates = {};
-            
-            // Add the current camera to updates
-            updates[`cameras/${cameraId}`] = cameraData;
-            
-            // Get all camera cards in their current order from the panel
-            const cameraCards = document.querySelectorAll('.camera-card');
-            
-            // Reposition all cameras based on their panel order
-            cameraCards.forEach((card, index) => {
-                const id = card.getAttribute('data-id');
-                // Update position for all cameras except the one being edited (it's already added)
-                if(id !== cameraId) {
-                    updates[`cameras/${id}/position`] = index + 1;
-                }
-            });
-            
-            // Set the position for the current camera based on form input
-            if(position) {
-                updates[`cameras/${cameraId}/position`] = parseInt(position);
-            } else {
-                // If no position specified, put it at the end
-                updates[`cameras/${cameraId}/position`] = cameraCards.length + 1;
-            }
-            
-            // Save all updates to Firebase
-            database.ref().update(updates)
-                .then(() => {
-                    showNotification(`Camera ${currentEditingCameraId ? 'updated' : 'added'} successfully!`);
-                    cameraModal.style.display = 'none';
-                    loadCameras(); // Reload to reflect new positions
-                })
-                .catch(err => {
-                    console.error(err);
-                    showNotification('Failed to save camera', true);
-                });
-        }
+ function saveNews() {
+    const newsId = newsIdInput.value.trim();
+    const title = newsTitleInput.value.trim();
+    const content = newsContentInput.value.trim();
+    const category = newsCategorySelect.value;
+    const row = newsRowSelect.value;
+    const position = newsPositionInput.value.trim();
 
-        // Save news
-        function saveNews(){
-            const newsId=newsIdInput.value.trim();
-            const title=newsTitleInput.value.trim();
-            const content=newsContentInput.value.trim();
-            const category=newsCategorySelect.value;
-            const row=newsRowSelect.value;
-            const position=newsPositionInput.value.trim();
-            
-            if(!newsId||!title||!content){showNotification('Please fill in all required fields',  true);return}
-            
-            const newsData={
-                title:  title,   
-                content:  content,   
-                category:  category,   
-                row:  row, 
-                position:  position ? parseInt(position) :  null,   
-                date:  new Date().toISOString().split('T')[0] // Use date instead of timestamp
-            };
+    if (!newsId || !title || !content) {
+        showNotification('Please fill in all required fields', true);
+        return;
+    }
+
+    // Create news data object
+    const newsData = {
+        title: title,
+        content: content,
+        category: category,
+        row: row,
+        position: position ? parseInt(position) : null, // Convert to number
+        date: new Date().toISOString() // Save current date
+    };
+
+    // Add/Update the news item
+    database.ref(`news/${newsId}`).set(newsData)
+        .then(() => {
+            showNotification(`News ${currentEditingNewsId ? 'updated' : 'added'} successfully!`);
+            newsModal.style.display = 'none';
+            loadNews(); // Reload to reflect new news items
+        })
+        .catch(err => {
+            console.error(err);
+            showNotification('Failed to save news', true);
+        });
+}
             
             // Check for position conflicts
             let conflictNewsId=null;
-            const positionNum=position?parseInt(position):  null;
+            const positionNum=position?parseInt(position): null;
             
             if(positionNum){
                 Object.keys(allNews).forEach(id=>{
@@ -699,7 +702,7 @@ function saveCamera() {
             if(conflictNewsId){
                 // Move conflicting news to the end
                 const newsInList=Object.values(allNews).filter(n=>n.position!==null);
-                const maxPosition=newsInList.length>0?Math.max(...newsInList.map(n=>n.position)):  0;
+                const maxPosition=newsInList.length>0?Math.max(...newsInList.map(n=>n.position)): 0;
                 const newPositionForConflicting=maxPosition+1;
                 
                 const updates={};
@@ -714,18 +717,18 @@ function saveCamera() {
                     })
                     .catch(err=>{
                         console.error(err);
-                        showNotification('Failed to save news',  true);
+                        showNotification('Failed to save news', true);
                     });
             }else{
                 database.ref('news/'+newsId).set(newsData)
                     .then(()=>{
-                        showNotification(`News ${currentEditingNewsId?'updated':  'added'} successfully!`);
+                        showNotification(`News ${currentEditingNewsId?'updated': 'added'} successfully!`);
                         newsModal.style.display='none';
                         loadNews();
                     })
                     .catch(err=>{
                         console.error(err);
-                        showNotification('Failed to save news',  true);
+                        showNotification('Failed to save news', true);
                     });
             }
         }
@@ -733,14 +736,14 @@ function saveCamera() {
         // Delete camera
         function deleteCamera(cameraId){
             if(confirm('Are you sure you want to delete this camera? This action cannot be undone.')){
-                database.ref('cameras/'+cameraId).remove().then(()=>{showNotification('Camera deleted successfully!');loadCameras()}).catch(err=>{console.error(err);showNotification('Failed to delete camera',  true)})
+                database.ref('cameras/'+cameraId).remove().then(()=>{showNotification('Camera deleted successfully!');loadCameras()}).catch(err=>{console.error(err);showNotification('Failed to delete camera', true)})
             }
         }
 
         // Delete news
         function deleteNews(newsId){
             if(confirm('Are you sure you want to delete this news item? This action cannot be undone.')){
-                database.ref('news/'+newsId).remove().then(()=>{showNotification('News item deleted successfully!');loadNews()}).catch(err=>{console.error(err);showNotification('Failed to delete news item',  true)})
+                database.ref('news/'+newsId).remove().then(()=>{showNotification('News item deleted successfully!');loadNews()}).catch(err=>{console.error(err);showNotification('Failed to delete news item', true)})
             }
         }
 
@@ -749,24 +752,24 @@ function saveCamera() {
         function closeNewsModalFunc(){newsModal.style.display='none';newsIdInput.disabled=false;}
 
         // Event Listeners
-        loginBtn.addEventListener('click',  login);
-        addCameraBtn.addEventListener('click',  openAddCameraModal);
-        refreshBtn.addEventListener('click',  loadCameras);
-        logoutBtn.addEventListener('click',  logout);
-        saveCameraBtn.addEventListener('click',  saveCamera);
-        cancelBtn.addEventListener('click',  closeCameraModal);
-        closeModal.addEventListener('click',  closeCameraModal);
-        searchBtn.addEventListener('click',  searchCamera);
+        loginBtn.addEventListener('click', login);
+        addCameraBtn.addEventListener('click', openAddCameraModal);
+        refreshBtn.addEventListener('click', loadCameras);
+        logoutBtn.addEventListener('click', logout);
+        saveCameraBtn.addEventListener('click', saveCamera);
+        cancelBtn.addEventListener('click', closeCameraModal);
+        closeModal.addEventListener('click', closeCameraModal);
+        searchBtn.addEventListener('click', searchCamera);
         
-        addNewsBtn.addEventListener('click',  openAddNewsModal);
-        refreshNewsBtn.addEventListener('click',  loadNews);
-        logoutNewsBtn.addEventListener('click',  logout);
-        saveNewsBtn.addEventListener('click',  saveNews);
-        cancelNewsBtn.addEventListener('click',  closeNewsModalFunc);
-        closeNewsModal.addEventListener('click',  closeNewsModalFunc);
-        searchNewsBtn.addEventListener('click',  searchNews);
+        addNewsBtn.addEventListener('click', openAddNewsModal);
+        refreshNewsBtn.addEventListener('click', loadNews);
+        logoutNewsBtn.addEventListener('click', logout);
+        saveNewsBtn.addEventListener('click', saveNews);
+        cancelNewsBtn.addEventListener('click', closeNewsModalFunc);
+        closeNewsModal.addEventListener('click', closeNewsModalFunc);
+        searchNewsBtn.addEventListener('click', searchNews);
         
-        window.addEventListener('click',  e=>{
+        window.addEventListener('click', e=>{
             if(e.target===cameraModal)closeCameraModal();
             if(e.target===newsModal)closeNewsModalFunc();
         });
