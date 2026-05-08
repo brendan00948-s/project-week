@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About · Macau Traffic Monitor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="https://i.postimg.cc/XNyP9t3q/Screenshot-2026-01-21-at-23-44-24-removebg-preview.png" type="image/x-icon">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/site.css">
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
+        import { getDatabase, ref, onValue, push, set, remove, onChildAdded, onChildChanged, onChildRemoved } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCFk_4BSjnAE65-H7JxX8dOvtc86qlWlQ0",
+            authDomain: "macau-traffic-database.firebaseapp.com",
+            projectId: "macau-traffic-database",
+            storageBucket: "macau-traffic-database.firebasestorage.app",
+            messagingSenderId: "149938244922",
+            appId: "1:149938244922:web:b4edaf4298b7e15e899403",
+            measurementId: "G-JSSBLM1R4K"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const database = getDatabase(app);
+        const auth = getAuth(app);
+        
+        // Make Firebase objects globally accessible
+        window.firebaseApp = app;
+        window.firebaseDatabase = database;
+        window.firebaseAuth = auth;
+        window.firebaseFunctions = {
+            ref, onValue, push, set, remove, onChildAdded, onChildChanged, onChildRemoved,  
+            createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged
+        };
+    </script>
+</head>
+<body data-page="about">
+    <!-- Elfsight Popup | Untitled Popup -->
+    <script src="https://elfsightcdn.com/platform.js" async></script>
+    <div class="elfsight-app-c9616ffe-955b-4c76-816a-7e105b98b486" data-elfsight-app-lazy></div>
+
+    <!-- Banned User Overlay -->
+    <div class="banned-overlay" id="bannedOverlay">
+        <div class="banned-overlay-content">
+            <i class="fas fa-ban"></i>
+            <h2>Access Denied</h2>
+            <p>Your IP address has been banned from one of our administrators.</p>
+            <div class="ban-details" id="banDetails"></div>
+            <p>Please contact the administrator if you believe this is an error.</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <!-- Language Selector -->
+            <div class="language-selector">
+                <button class="lang-btn" id="langButton">
+                    <i class="fas fa-globe"></i>
+                    <span id="currentLang">English</span>
+                </button>
+                <div class="lang-dropdown" id="langDropdown">
+                    <a href="#" class="lang-option" data-lang="en">English</a>
+                    <a href="#" class="lang-option" data-lang="zh">繁體中文</a>
+                    <a href="#" class="lang-option" data-lang="pt">Português</a>
+                    <a href="#" class="lang-option" data-lang="ja">日本語</a>
+                </div>
+            </div>
+            
+            <div class="logo-container">
+                <div class="logo">
+                    <i class="fas fa-car"></i>
+                </div>
+                <h1 id="header-title">Macau Traffic Monitor</h1>
+            </div>
+            <h2 id="welcome-message">Hello! Welcome to visit our website!</h2>
+            <p class="subtitle" id="header-subtitle">Real-time traffic conditions and waiting times for Macau's major roads and border crossings. Fully Coded by (Project Week) F1J Group 5.</p>
+            <nav class="site-nav" aria-label="Main navigation">
+                <a href="index.html" class="nav-link" id="nav-dashboard">Dashboard</a>
+                <a href="cameras.html" class="nav-link" id="nav-cameras">Live Cameras</a>
+                <a href="news.html" class="nav-link" id="nav-news">News</a>
+                <a href="weather.html" class="nav-link" id="nav-weather">Weather</a>
+                <a href="chat.html" class="nav-link" id="nav-chat">Community Chat</a>
+                <a href="about.html" class="nav-link active" id="nav-about">About</a>
+            </nav>
+        <main class="main-area">
+                <h2 id="about-title">About Macau Traffic Monitor</h2>
+                
+                <p id="about-desc">Macau Traffic Monitor is a real-time traffic information platform designed to help residents and visitors navigate Macau's road network efficiently. Our service provides up-to-date traffic conditions, estimated crossing times, and live camera feeds for major roads and border crossings.</p>
+                
+                <h3 id="mission-title">Our Mission</h3>
+                <p id="mission-desc">We aim to reduce travel time and improve road safety in Macau by providing accurate, real-time traffic information. Our platform helps users make informed decisions about their travel routes and timing.</p>
+                
+                <h3 id="data-sources-title">Data Sources</h3>
+                <p id="data-sources-desc">Our traffic data is sourced from multiple official channels: </p>
+                <ul>
+                    <li id="source-1">DSAT (Direcção de Serviços de Trânsito) - Official traffic data</li>
+                    <li id="source-2">Google Maps API - Traffic flow and incident reports</li>
+                    <li id="source-3">Live traffic cameras operated by DSAT</li>
+                    <li id="source-4">Community reports from our users</li>
+                </ul>
+                
+                <h3 id="features-title">Features</h3>
+                <ul>
+                    <li id="feature-1">Real-time traffic conditions visualization</li>
+                    <li id="feature-2">Estimated waiting times for border crossings</li>
+                    <li id="feature-3">Live traffic camera feeds</li>
+                    <li id="feature-4">Community chat for real-time updates</li>
+                    <li id="feature-5">Mobile app for on-the-go traffic updates</li>
+                    <li id="feature-6">Historical traffic pattern analysis</li>
+                </ul>
+            </div>
+            
+            <div class="app-promo">
+                <h2><i class="fas fa-mobile-alt"></i> <span id="mobile-app-title">Get Traffic Updates on the Go</span></h2>
+                <p id="mobile-app-desc">Download our mobile app for traffic alerts and navigation assistance</p>
+                
+                <div class="app-features">
+                    <div class="feature">
+                        <i class="fas fa-bell"></i>
+                        <p id="feature-alerts">Instant Alerts</p>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-route"></i>
+                        <p id="feature-routing">Smart Routing</p>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-history"></i>
+                        <p id="feature-history">Traffic History</p>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-map-marked-alt"></i>
+                        <p id="feature-maps">Offline Maps</p>
+                    </div>
+                </div>
+                
+                <div class="app-buttons">
+                    <a href="#" class="app-btn apple">
+                        <i class="fab fa-apple"></i>
+                        <div>
+                            <small>Download on the</small>
+                            <p>App Store</p>
+                        </div>
+                    </a>
+                    <a href="#" class="app-btn google">
+                        <i class="fab fa-google-play"></i>
+                        <div>
+                            <small>Get it on</small>
+                            <p>Google Play</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </main>
+        <footer>
+            <p>Macau Traffic Monitor © 2026 | Traffic data for Macau Special Administrative Region</p>
+            <p>Data Sources: Google Maps API | DSAT (Direcção de Serviços de Trânsito)</p>
+        </footer>
+        
+        <!-- Firebase Status Indicator -->
+        <div class="firebase-status" id="firebase-status">
+            <div class="status-dot" id="status-dot"></div>
+            <span id="status-text">Connecting to Firebase...</span>
+        </div>
+    </div>
+
+    <script src="js/app.js" defer></script>
+    <script async src="https://iframely.net/embed.js"></script>
+</body>
+</html>

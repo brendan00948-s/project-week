@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather · Macau Traffic Monitor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="https://i.postimg.cc/XNyP9t3q/Screenshot-2026-01-21-at-23-44-24-removebg-preview.png" type="image/x-icon">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/site.css">
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
+        import { getDatabase, ref, onValue, push, set, remove, onChildAdded, onChildChanged, onChildRemoved } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCFk_4BSjnAE65-H7JxX8dOvtc86qlWlQ0",
+            authDomain: "macau-traffic-database.firebaseapp.com",
+            projectId: "macau-traffic-database",
+            storageBucket: "macau-traffic-database.firebasestorage.app",
+            messagingSenderId: "149938244922",
+            appId: "1:149938244922:web:b4edaf4298b7e15e899403",
+            measurementId: "G-JSSBLM1R4K"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const database = getDatabase(app);
+        const auth = getAuth(app);
+        
+        // Make Firebase objects globally accessible
+        window.firebaseApp = app;
+        window.firebaseDatabase = database;
+        window.firebaseAuth = auth;
+        window.firebaseFunctions = {
+            ref, onValue, push, set, remove, onChildAdded, onChildChanged, onChildRemoved,  
+            createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged
+        };
+    </script>
+</head>
+<body data-page="weather">
+    <!-- Elfsight Popup | Untitled Popup -->
+    <script src="https://elfsightcdn.com/platform.js" async></script>
+    <div class="elfsight-app-c9616ffe-955b-4c76-816a-7e105b98b486" data-elfsight-app-lazy></div>
+
+    <!-- Banned User Overlay -->
+    <div class="banned-overlay" id="bannedOverlay">
+        <div class="banned-overlay-content">
+            <i class="fas fa-ban"></i>
+            <h2>Access Denied</h2>
+            <p>Your IP address has been banned from one of our administrators.</p>
+            <div class="ban-details" id="banDetails"></div>
+            <p>Please contact the administrator if you believe this is an error.</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <!-- Language Selector -->
+            <div class="language-selector">
+                <button class="lang-btn" id="langButton">
+                    <i class="fas fa-globe"></i>
+                    <span id="currentLang">English</span>
+                </button>
+                <div class="lang-dropdown" id="langDropdown">
+                    <a href="#" class="lang-option" data-lang="en">English</a>
+                    <a href="#" class="lang-option" data-lang="zh">繁體中文</a>
+                    <a href="#" class="lang-option" data-lang="pt">Português</a>
+                    <a href="#" class="lang-option" data-lang="ja">日本語</a>
+                </div>
+            </div>
+            
+            <div class="logo-container">
+                <div class="logo">
+                    <i class="fas fa-car"></i>
+                </div>
+                <h1 id="header-title">Macau Traffic Monitor</h1>
+            </div>
+            <h2 id="welcome-message">Hello! Welcome to visit our website!</h2>
+            <p class="subtitle" id="header-subtitle">Real-time traffic conditions and waiting times for Macau's major roads and border crossings. Fully Coded by (Project Week) F1J Group 5.</p>
+            <nav class="site-nav" aria-label="Main navigation">
+                <a href="index.html" class="nav-link" id="nav-dashboard">Dashboard</a>
+                <a href="cameras.html" class="nav-link" id="nav-cameras">Live Cameras</a>
+                <a href="news.html" class="nav-link" id="nav-news">News</a>
+                <a href="weather.html" class="nav-link active" id="nav-weather">Weather</a>
+                <a href="chat.html" class="nav-link" id="nav-chat">Community Chat</a>
+                <a href="about.html" class="nav-link" id="nav-about">About</a>
+            </nav>
+
+        <main class="main-area weather-page">
+            <div class="weather-hero">
+                <h2 id="weather-page-title">SMG weather</h2>
+                <p class="lead" id="weather-page-desc">
+                    Official weather warnings and daily conditions from the Meteorological and Geophysical Bureau (SMG) RSS feeds at rss.smg.gov.mo.
+                </p>
+                <div class="weather-toolbar">
+                    <button type="button" class="btn-refresh" id="btn-refresh-feeds" aria-label="Refresh feeds">
+                        <i class="fas fa-rotate"></i> <span id="refresh-label">Refresh feeds</span>
+                    </button>
+                    <span class="feed-meta" id="feed-last-updated"></span>
+                </div>
+            </div>
+            <div class="weather-grid">
+                <section class="weather-card" aria-labelledby="alerts-heading">
+                    <h3 id="alerts-heading"><i class="fas fa-triangle-exclamation"></i> <span id="alerts-title-text">Weather warnings</span></h3>
+                    <div class="loading" id="alerts-loading"><div class="spinner"></div><span>Loading…</span></div>
+                    <div id="smg-alerts-host" class="rss-html" hidden></div>
+                </section>
+                <section class="weather-card" aria-labelledby="report-heading">
+                    <h3 id="report-heading"><i class="fas fa-cloud-sun"></i> <span id="report-title-text">Daily weather report</span></h3>
+                    <div class="loading" id="report-loading"><div class="spinner"></div><span>Loading…</span></div>
+                    <div id="smg-report-host" class="rss-html" hidden></div>
+                </section>
+                <section class="weather-card" aria-labelledby="forecast-heading" style="grid-column: 1 / -1;">
+                    <h3 id="forecast-heading"><i class="fas fa-calendar-days"></i> <span id="forecast-title-text">Weather forecast</span></h3>
+                    <div class="loading" id="forecast-loading"><div class="spinner"></div><span>Loading…</span></div>
+                    <div id="smg-forecast-host" class="rss-html" hidden></div>
+                </section>
+            </div>
+            <p class="smg-attribution" id="smg-attribution">
+                Data source: <a href="https://rss.smg.gov.mo/" rel="noopener noreferrer" target="_blank">Macao Meteorological and Geophysical Bureau (SMG) RSS</a>.
+                Feeds used: weather warnings (c_WSignal_rss.xml), daily report (c_ActualWeather_rss.xml), forecast (c_WForecast_rss.xml).
+            </p>
+        </main>
+        <footer>
+            <p>Macau Traffic Monitor © 2026 | Traffic data for Macau Special Administrative Region</p>
+            <p>Data Sources: Google Maps API | DSAT (Direcção de Serviços de Trânsito)</p>
+        </footer>
+        
+        <!-- Firebase Status Indicator -->
+        <div class="firebase-status" id="firebase-status">
+            <div class="status-dot" id="status-dot"></div>
+            <span id="status-text">Connecting to Firebase...</span>
+        </div>
+    </div>
+
+    <script src="js/app.js" defer></script>
+    <script async src="https://iframely.net/embed.js"></script>
+</body>
+</html>
