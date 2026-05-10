@@ -122,6 +122,13 @@
         .data-table tr:hover{background: rgba(255, 255, 255, 0.05)}
         .ban-btn{background: #ff4d4d;color: #fff}
         .ban-btn:hover{background: #ff3333}
+
+        .test-warning-panel{background: rgba(255, 209, 214, 0.16);border: 1px solid rgba(255, 148, 159, 0.52);border-radius: 14px;padding: 16px;margin: 14px 0 18px}
+        .test-warning-panel h3{color: #ffbec5;margin-bottom: 10px}
+        .test-warning-panel .form-row{grid-template-columns: 1fr 1fr}
+        .test-warning-panel .hint{font-size: .84rem;opacity: .86;margin-top: 8px}
+        .test-warning-actions{display: flex;gap: 10px;flex-wrap: wrap;margin-top: 10px}
+        .btn-warning{background: #ff8894;color: #2a0006}
     </style>
 </head>
 <body>
@@ -183,6 +190,30 @@
                 <button class="btn btn-secondary" id="refreshNewsBtn"><i class="fas fa-sync-alt"></i> Refresh Data</button>
                 <button class="btn btn-danger" id="logoutNewsBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
             </div>
+
+            <div class="test-warning-panel">
+                <h3><i class="fas fa-triangle-exclamation"></i> Issue Test Weather Warning</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="testWarningType">Warning Type</label>
+                        <input type="text" id="testWarningType" placeholder="e.g. Heavy Rain Test Warning">
+                    </div>
+                    <div class="form-group">
+                        <label for="testWarningSignalImage">Signal Image URL (optional)</label>
+                        <input type="text" id="testWarningSignalImage" placeholder="https://.../signal-image.png">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="testWarningMessage">Warning Message</label>
+                    <textarea id="testWarningMessage" rows="3" placeholder="Write the test warning message shown on the weather panel..."></textarea>
+                </div>
+                <div class="test-warning-actions">
+                    <button class="btn btn-warning" id="issueTestWarningBtn"><i class="fas fa-bullhorn"></i> Issue Test Warning</button>
+                    <button class="btn btn-secondary" id="clearTestWarningBtn"><i class="fas fa-trash"></i> Clear Test Warning</button>
+                </div>
+                <p class="hint">This publishes to <code>weather_test_warning/current</code> and appears on the website weather warning module.</p>
+            </div>
+
             <div class="stats-container"><div class="stat-card"><div class="stat-label">Total News Items</div><div class="stat-value" id="totalNews">0</div></div></div>
             <div class="news-grid" id="newsGrid"></div>
         </div>
@@ -471,6 +502,11 @@ const firebaseConfig = {
         const newsRowSelect = document.getElementById('newsRow');
         const newsPositionInput = document.getElementById('newsPosition');
         const searchNewsInput = document.getElementById('searchNews');
+        const testWarningTypeInput = document.getElementById('testWarningType');
+        const testWarningSignalImageInput = document.getElementById('testWarningSignalImage');
+        const testWarningMessageInput = document.getElementById('testWarningMessage');
+        const issueTestWarningBtn = document.getElementById('issueTestWarningBtn');
+        const clearTestWarningBtn = document.getElementById('clearTestWarningBtn');
 
         // IP Ban Form Elements
         const ipAddressInput = document.getElementById('ipAddress');
@@ -1442,6 +1478,49 @@ const firebaseConfig = {
             }
         }
 
+        function issueTestWeatherWarning(){
+            const type = testWarningTypeInput.value.trim() || 'Staff Weather Test Warning';
+            const message = testWarningMessageInput.value.trim();
+            const signalImage = testWarningSignalImageInput.value.trim();
+
+            if(!message){
+                showNotification('Please enter a test warning message', true);
+                return;
+            }
+
+            const warningData = {
+                active: true,
+                type,
+                message,
+                signalImage: signalImage || 'https://rss.smg.gov.mo/images/smglogo.gif',
+                updatedAt: new Date().toLocaleString(),
+                timestamp: new Date().toISOString()
+            };
+
+            database.ref('weather_test_warning/current').set(warningData)
+                .then(() => {
+                    showNotification('Test weather warning issued successfully');
+                })
+                .catch(err => {
+                    console.error(err);
+                    showNotification('Failed to issue test weather warning', true);
+                });
+        }
+
+        function clearTestWeatherWarning(){
+            database.ref('weather_test_warning/current').remove()
+                .then(() => {
+                    showNotification('Test weather warning cleared');
+                    testWarningTypeInput.value = '';
+                    testWarningMessageInput.value = '';
+                    testWarningSignalImageInput.value = '';
+                })
+                .catch(err => {
+                    console.error(err);
+                    showNotification('Failed to clear test warning', true);
+                });
+        }
+
         // Delete camera
         function deleteCamera(cameraId){
             if(confirm('Are you sure you want to delete this camera? This action cannot be undone.')){
@@ -1496,6 +1575,8 @@ const firebaseConfig = {
         cancelNewsBtn.addEventListener('click', closeNewsModalFunc);
         closeNewsModal.addEventListener('click', closeNewsModalFunc);
         searchNewsBtn.addEventListener('click', searchNews);
+        issueTestWarningBtn.addEventListener('click', issueTestWeatherWarning);
+        clearTestWarningBtn.addEventListener('click', clearTestWeatherWarning);
         
         banIPBtn.addEventListener('click', openBanIPModal);
         refreshIPBanBtn.addEventListener('click', () => {

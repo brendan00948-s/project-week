@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Macau Traffic Monitor</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="icon" href="https://i.postimg.cc/XNyP9t3q/Screenshot-2026-01-21-at-23-44-24-removebg-preview.png" type="image/x-icon">
     
     <!-- Firebase SDK -->
@@ -200,24 +203,6 @@
             color: #000;
         }
 
-        .external-page-link {
-            display: inline-block;
-            margin-bottom: 14px;
-            padding: 9px 16px;
-            border-radius: 24px;
-            background: rgba(255, 215, 0, 0.2);
-            border: 1px solid rgba(255, 215, 0, 0.45);
-            color: #ffd700;
-            text-decoration: none;
-            font-weight: 700;
-            transition: all 0.2s ease;
-        }
-
-        .external-page-link:hover {
-            background: rgba(255, 215, 0, 0.35);
-            transform: translateY(-2px);
-        }
-        
         .page {
             display: none;
             animation: fadeIn 0.5s ease;
@@ -1466,42 +1451,186 @@
             margin-bottom: 10px;
         }
 
-        .rss-weather-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        /* Layout polish overrides (keep existing behavior intact) */
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            letter-spacing: 0.1px;
+        }
+
+        .container {
+            max-width: 1480px;
+        }
+
+        header {
+            padding: 24px 28px;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+        }
+
+        .subtitle {
+            font-size: 1.05rem;
+            line-height: 1.55;
+            max-width: 860px;
+        }
+
+        .nav-tabs {
             gap: 12px;
         }
 
-        .rss-card {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 10px;
-            padding: 10px;
+        .nav-tab {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: #fff;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.24);
+            min-width: 140px;
+        }
+
+        .nav-tab.active {
+            color: #1f1f1f;
+            background: #ffd700;
+            border-color: #ffd700;
+        }
+
+        .map-container,
+        .info-panel,
+        .weather-panel,
+        .camera-feeds,
+        .content-section,
+        .chat-container,
+        .about-content {
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 14px 32px rgba(0, 0, 0, 0.24);
+        }
+
+        .panel-title {
+            letter-spacing: 0.2px;
+            margin-bottom: 18px;
+        }
+
+        .legacy-warning-section {
+            display: none;
+        }
+
+        .weather-warning-primary {
+            background: rgba(255, 228, 230, 0.96);
+            border: 1px solid rgba(235, 157, 165, 0.9);
+            border-radius: 14px;
+            padding: 14px;
+            color: #5e1f27;
+        }
+
+        .weather-warning-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
             margin-bottom: 10px;
+            border-bottom: 1px solid rgba(190, 75, 92, 0.22);
+            padding-bottom: 10px;
+        }
+
+        .smg-logo-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            background: #fff;
+            object-fit: contain;
+            padding: 4px;
+        }
+
+        .weather-warning-title {
+            font-weight: 800;
+            font-size: 1rem;
+        }
+
+        .weather-warning-subtitle {
+            font-size: 0.82rem;
+            opacity: 0.9;
+        }
+
+        .weather-warning-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .weather-warning-card {
+            display: grid;
+            grid-template-columns: 58px 1fr;
+            gap: 10px;
+            padding: 10px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.84);
+            border: 1px solid rgba(190, 75, 92, 0.28);
+        }
+
+        .weather-warning-signal {
+            width: 58px;
+            height: 58px;
+            border-radius: 10px;
+            background: #fff;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            object-fit: contain;
+            padding: 4px;
+        }
+
+        .weather-warning-card-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #61202a;
+        }
+
+        .weather-warning-card-time {
+            font-size: 0.78rem;
+            color: #8f3643;
+            margin: 3px 0 5px;
+        }
+
+        .weather-warning-card-text {
+            font-size: 0.86rem;
+            color: #61202a;
+            line-height: 1.45;
+        }
+
+        .rss-weather-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .rss-card {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.17);
+            border-radius: 12px;
+            padding: 12px;
         }
 
         .rss-card-title {
-            font-weight: bold;
+            font-weight: 700;
             color: #ffd700;
             margin-bottom: 6px;
-            font-size: 0.95rem;
+            font-size: 0.94rem;
         }
 
         .rss-card-time {
-            font-size: 0.78rem;
-            opacity: 0.8;
+            font-size: 0.8rem;
+            opacity: 0.86;
             margin-bottom: 6px;
         }
 
         .rss-card-text {
-            font-size: 0.92rem;
+            font-size: 0.9rem;
             line-height: 1.45;
         }
 
         .rss-meta {
             font-size: 0.8rem;
             opacity: 0.85;
-            margin-top: 6px;
+            margin-top: 8px;
         }
         
         @media (max-width: 768px) {
@@ -1516,6 +1645,20 @@
             
             .weather-extra {
                 justify-content: center;
+            }
+
+            .weather-warning-card {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .weather-warning-signal {
+                margin: 0 auto;
+            }
+
+            .nav-tab {
+                min-width: 120px;
+                font-size: 0.92rem;
             }
         }
     </style>
@@ -1560,14 +1703,13 @@
             </div>
             <h2 id="welcome-message">Hello! Welcome to visit our website!</h2>
             <p class="subtitle" id="header-subtitle">Real-time traffic conditions and waiting times for Macau's major roads and border crossings. Fully Coded by (Project Week) F1J Group 5.</p>
-            <a class="external-page-link" href="smg-weather.html">SMG Weather Alerts & Daily RSS</a>
             
             <div class="nav-tabs">
-                <div class="nav-tab active" data-page="dashboard" id="nav-dashboard">Dashboard</div>
-                <div class="nav-tab" data-page="cameras" id="nav-cameras">Live Cameras</div>
-                <div class="nav-tab" data-page="news" id="nav-news">News</div>
-                <div class="nav-tab" data-page="chat" id="nav-chat">Community Chat</div>
-                <div class="nav-tab" data-page="about" id="nav-about">About</div>
+                <a class="nav-tab active" data-page="dashboard" id="nav-dashboard" href="dashboard.html">Dashboard</a>
+                <a class="nav-tab" data-page="cameras" id="nav-cameras" href="cameras.html">Live Cameras</a>
+                <a class="nav-tab" data-page="news" id="nav-news" href="news.html">News</a>
+                <a class="nav-tab" data-page="chat" id="nav-chat" href="chat.html">Community Chat</a>
+                <a class="nav-tab" data-page="about" id="nav-about" href="about.html">About</a>
             </div>
         </header>
         
@@ -1707,6 +1849,20 @@
                 
                 <div class="weather-content">
                     <div class="weather-section">
+                        <h3><i class="fas fa-triangle-exclamation"></i> Weather Warning Signals</h3>
+                        <div class="weather-warning-primary" id="weather-warning-primary" style="display: none;">
+                            <div class="weather-warning-header">
+                                <img class="smg-logo-icon" src="https://rss.smg.gov.mo/images/smglogo.gif" alt="SMG Logo">
+                                <div>
+                                    <div class="weather-warning-title">SMG Weather Warning Signal</div>
+                                    <div class="weather-warning-subtitle" id="weather-warning-meta">Updated from SMG weather feeds.</div>
+                                </div>
+                            </div>
+                            <div class="weather-warning-list" id="weather-warning-cards"></div>
+                        </div>
+                    </div>
+
+                    <div class="weather-section">
                         <h3><i class="fas fa-thermometer-half"></i> <span id="current-weather-title">Current Weather</span></h3>
                         <div class="weather-info" id="current-weather">
                             <div class="loading" id="weather-loading">
@@ -1716,7 +1872,7 @@
                         </div>
                     </div>
                     
-                    <div class="weather-section">
+                    <div class="weather-section legacy-warning-section">
                         <h3><i class="fas fa-exclamation-triangle"></i> <span id="warning-title">Weather Warnings</span></h3>
                         <div class="warning-info" id="weather-warnings">
                             <div class="loading" id="warning-loading">
@@ -1727,30 +1883,21 @@
                     </div>
 
                     <div class="weather-section">
-                        <h3><i class="fas fa-rss"></i> SMG RSS Alerts & Daily Weather</h3>
+                        <h3><i class="fas fa-cloud-sun-rain"></i> Daily Weather Forecast</h3>
                         <div class="warning-info">
                             <div class="rss-weather-grid">
-                                <div>
-                                    <div class="rss-card-title">Latest Weather Alerts</div>
-                                    <div id="rss-alerts-container">
-                                        <div class="loading">
-                                            <div class="spinner"></div>
-                                            <span>Loading SMG RSS alerts...</span>
-                                        </div>
-                                    </div>
-                                </div>
                                 <div>
                                     <div class="rss-card-title">Daily Forecast</div>
                                     <div id="rss-forecast-container">
                                         <div class="loading">
                                             <div class="spinner"></div>
-                                            <span>Loading SMG RSS forecast...</span>
+                                            <span>Loading weather forecast...</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="rss-meta">
-                                Source: <a href="https://rss.smg.gov.mo/" target="_blank" rel="noopener noreferrer">rss.smg.gov.mo</a>
+                                Source: <a href="https://rss.smg.gov.mo/" target="_blank" rel="noopener noreferrer">SMG weather service</a>
                             </div>
                         </div>
                     </div>
@@ -2053,39 +2200,66 @@
                 }
             }
             
+            const validPages = new Set(['dashboard', 'cameras', 'news', 'chat', 'about']);
+
+            function activatePage(pageName) {
+                const selectedPage = validPages.has(pageName) ? pageName : 'dashboard';
+
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+
+                const activeTab = document.querySelector(`.nav-tab[data-page="${selectedPage}"]`);
+                if (activeTab) activeTab.classList.add('active');
+
+                const pageElement = document.getElementById(`${selectedPage}-page`);
+                if (pageElement) pageElement.classList.add('active');
+
+                if (selectedPage === 'cameras') {
+                    loadCamerasFromFirebase();
+                }
+                if (selectedPage === 'news') {
+                    loadNewsFromFirebase();
+                }
+                if (selectedPage === 'chat') {
+                    initChat();
+                }
+                if (selectedPage === 'dashboard') {
+                    loadWeatherData();
+                    loadSmgRssData();
+                }
+            }
+
+            function getInitialPageFromRoute() {
+                const queryPage = new URLSearchParams(window.location.search).get('page');
+                if (validPages.has(queryPage)) return queryPage;
+
+                const pathName = window.location.pathname.split('/').pop() || 'index.html';
+                const pathMap = {
+                    'index.html': 'dashboard',
+                    'dashboard.html': 'dashboard',
+                    'traffic.html': 'dashboard',
+                    'cameras.html': 'cameras',
+                    'news.html': 'news',
+                    'chat.html': 'chat',
+                    'about.html': 'about'
+                };
+
+                return pathMap[pathName] || 'dashboard';
+            }
+
             // Tab navigation
             document.querySelectorAll('.nav-tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    // Remove active class from all tabs and pages
-                    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-                    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-                    
-                    // Add active class to clicked tab
-                    tab.classList.add('active');
-                    
-                    // Show corresponding page
-                    const pageId = tab.getAttribute('data-page') + '-page';
-                    document.getElementById(pageId).classList.add('active');
-                    
-                    // Load cameras if we're on the cameras page
-                    if (tab.getAttribute('data-page') === 'cameras') {
-                        loadCamerasFromFirebase();
+                tab.addEventListener('click', (event) => {
+                    const targetPage = tab.getAttribute('data-page') || 'dashboard';
+                    const targetHref = tab.getAttribute('href');
+
+                    if (targetHref) {
+                        event.preventDefault();
+                        window.location.href = targetHref;
+                        return;
                     }
-                    
-                    // Load news if we're on the news page
-                    if (tab.getAttribute('data-page') === 'news') {
-                        loadNewsFromFirebase();
-                    }
-                    
-                    // Initialize chat if we're on the chat page
-                    if (tab.getAttribute('data-page') === 'chat') {
-                        initChat();
-                    }
-                    
-                    // Load weather if we're on the dashboard page
-                    if (tab.getAttribute('data-page') === 'dashboard') {
-                        loadWeatherData();
-                    }
+
+                    activatePage(targetPage);
                 });
             });
             
@@ -3663,6 +3837,11 @@
                     });
             }
 
+            const SMG_LOGO_URL = 'https://rss.smg.gov.mo/images/smglogo.gif';
+            const WEATHER_CACHE_KEY = 'smgWeatherMergedCacheV1';
+            const WEATHER_CACHE_TTL = 5 * 60 * 1000;
+            const TEST_WARNING_URL = 'https://macau-traffic-database-default-rtdb.firebaseio.com/weather_test_warning/current.json';
+
             async function fetchSmgFeedData(feedUrl) {
                 const targets = [
                     {
@@ -3721,7 +3900,7 @@
                     .map((row) => {
                         const cells = Array.from(row.querySelectorAll('td')).map((cell) => cell.textContent.trim());
                         return {
-                            type: cells[0] || 'Unknown',
+                            type: cells[0] || 'Warning',
                             updatedAt: cells[1] || '',
                             detail: cells[2] || 'No detail available'
                         };
@@ -3741,22 +3920,73 @@
                     .slice(0, 7);
             }
 
-            function renderAlertsFromRows(rows) {
-                const alertsContainer = document.getElementById('rss-alerts-container');
-                if (!alertsContainer) return;
+            function extractActualWeatherGraphic(descriptionHtml) {
+                if (!descriptionHtml) return '';
+                const imageMatch = descriptionHtml.match(/<img[^>]+src="([^"]+)"/i);
+                return imageMatch ? imageMatch[1] : '';
+            }
 
-                if (!rows.length) {
-                    alertsContainer.innerHTML = '<p>No active weather alert rows available.</p>';
+            function isInactiveWarning(detailText) {
+                if (!detailText) return true;
+                const normalized = detailText.toLowerCase();
+                const patterns = [
+                    /現時並沒有/,
+                    /現時沒有/,
+                    /現時沒有/,
+                    /沒有.*警告/,
+                    /no .* warning/,
+                    /not .* warning/,
+                    /no warning signal/
+                ];
+                return patterns.some((pattern) => pattern.test(normalized) || pattern.test(detailText));
+            }
+
+            function getWarningSignalImage(typeText, fallbackImage) {
+                const type = typeText || '';
+                if (type.includes('熱帶氣旋') || /typhoon/i.test(type)) {
+                    return 'https://www.smg.gov.mo/icons/weatherIcon/ww-c03.gif';
+                }
+                if (type.includes('暴雨') || /rain/i.test(type)) {
+                    return 'https://www.smg.gov.mo/icons/weatherIcon/ww-c09.gif';
+                }
+                if (type.includes('雷暴') || /thunder/i.test(type)) {
+                    return 'https://www.smg.gov.mo/icons/weatherIcon/ww-c08.gif';
+                }
+                return fallbackImage || SMG_LOGO_URL;
+            }
+
+            function renderWarningSignals(warnings, metaText, fallbackImage) {
+                const warningSection = document.getElementById('weather-warning-primary');
+                const warningCards = document.getElementById('weather-warning-cards');
+                const warningMeta = document.getElementById('weather-warning-meta');
+                if (!warningSection || !warningCards || !warningMeta) return;
+
+                warningMeta.textContent = metaText || 'Updated from SMG weather feeds.';
+
+                if (!warnings.length) {
+                    warningSection.style.display = 'none';
+                    warningCards.innerHTML = '';
                     return;
                 }
 
-                alertsContainer.innerHTML = rows.map((row) => `
-                    <div class="rss-card">
-                        <div class="rss-card-title">${row.type}</div>
-                        <div class="rss-card-time">${row.updatedAt}</div>
-                        <div class="rss-card-text">${row.detail}</div>
-                    </div>
-                `).join('');
+                warningSection.style.display = 'block';
+                warningCards.innerHTML = warnings.map((warning) => {
+                    const safeType = warning.type || 'Weather Warning';
+                    const safeDetail = warning.detail || 'No details available';
+                    const safeUpdated = warning.updatedAt ? `Updated: ${warning.updatedAt}` : 'Updated from SMG feed';
+                    const signalImage = getWarningSignalImage(safeType, warning.signalImage || fallbackImage);
+
+                    return `
+                        <article class="weather-warning-card">
+                            <img class="weather-warning-signal" src="${signalImage}" alt="${safeType} signal image" onerror="this.src='${SMG_LOGO_URL}'">
+                            <div>
+                                <div class="weather-warning-card-title">${safeType}</div>
+                                <div class="weather-warning-card-time">${safeUpdated}</div>
+                                <div class="weather-warning-card-text">${safeDetail}</div>
+                            </div>
+                        </article>
+                    `;
+                }).join('');
             }
 
             function renderForecastFromBlocks(blocks) {
@@ -3784,40 +4014,119 @@
                 }).join('');
             }
 
-            async function loadSmgRssData() {
-                const alertsContainer = document.getElementById('rss-alerts-container');
+            function getCachedWeatherPayload() {
+                try {
+                    const cached = localStorage.getItem(WEATHER_CACHE_KEY);
+                    if (!cached) return null;
+                    const parsed = JSON.parse(cached);
+                    if (!parsed || !parsed.timestamp || !parsed.data) return null;
+                    return parsed;
+                } catch (error) {
+                    return null;
+                }
+            }
+
+            function saveCachedWeatherPayload(data) {
+                try {
+                    localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({
+                        timestamp: Date.now(),
+                        data
+                    }));
+                } catch (error) {
+                    // Ignore localStorage write issues
+                }
+            }
+
+            function renderWeatherPayload(data) {
+                if (!data) return;
+                renderWarningSignals(data.warnings || [], data.warningMeta || '', data.signalFallback || SMG_LOGO_URL);
+                renderForecastFromBlocks(data.forecastBlocks || []);
+            }
+
+            async function loadStaffTestWarning() {
+                try {
+                    const response = await fetch(TEST_WARNING_URL, { cache: 'no-store' });
+                    if (!response.ok) return null;
+                    const payload = await response.json();
+                    if (!payload || !payload.active) return null;
+                    return {
+                        type: payload.type || 'Test Weather Warning',
+                        detail: payload.message || 'Staff test warning is active.',
+                        updatedAt: payload.updatedAt || payload.timestamp || '',
+                        signalImage: payload.signalImage || SMG_LOGO_URL
+                    };
+                } catch (error) {
+                    return null;
+                }
+            }
+
+            async function loadSmgRssData(forceRefresh = false) {
                 const forecastContainer = document.getElementById('rss-forecast-container');
-                if (!alertsContainer || !forecastContainer) return;
+                if (!forecastContainer) return;
+
+                const cached = getCachedWeatherPayload();
+                const cacheAge = cached ? Date.now() - cached.timestamp : Infinity;
+                if (!forceRefresh && cached && cacheAge < WEATHER_CACHE_TTL) {
+                    renderWeatherPayload(cached.data);
+                    return;
+                }
 
                 try {
-                    const [alertsFeed, forecastFeed] = await Promise.all([
+                    const [actualFeed, alertsFeed, forecastFeed, staffTestWarning] = await Promise.all([
+                        fetchSmgFeedData('https://rss.smg.gov.mo/c_ActualWeather_rss.xml'),
                         fetchSmgFeedData('https://rss.smg.gov.mo/c_WSignal_rss.xml'),
-                        fetchSmgFeedData('https://rss.smg.gov.mo/c_WForecast7days_rss.xml')
+                        fetchSmgFeedData('https://rss.smg.gov.mo/c_WForecast7days_rss.xml'),
+                        loadStaffTestWarning()
                     ]);
 
-                    let alertRows = [];
-                    if (alertsFeed.type === 'json') {
-                        const alertDescription = alertsFeed.payload.items?.[0]?.description || '';
-                        alertRows = extractAlertRows(alertDescription);
-                    } else {
-                        const alertDescription = alertsFeed.payload.querySelector('item description')?.textContent || '';
-                        alertRows = extractAlertRows(alertDescription);
-                    }
-                    renderAlertsFromRows(alertRows);
+                    const actualDescription = actualFeed.type === 'json'
+                        ? (actualFeed.payload.items?.[0]?.description || '')
+                        : (actualFeed.payload.querySelector('item description')?.textContent || '');
+                    const fallbackSignalImage = extractActualWeatherGraphic(actualDescription) || SMG_LOGO_URL;
 
-                    let forecastBlocks = [];
-                    if (forecastFeed.type === 'json') {
-                        const forecastDescription = forecastFeed.payload.items?.[0]?.description || '';
-                        forecastBlocks = extractForecastBlocks(forecastDescription);
-                    } else {
-                        const forecastDescription = forecastFeed.payload.querySelector('item description')?.textContent || '';
-                        forecastBlocks = extractForecastBlocks(forecastDescription);
+                    const alertDescription = alertsFeed.type === 'json'
+                        ? (alertsFeed.payload.items?.[0]?.description || '')
+                        : (alertsFeed.payload.querySelector('item description')?.textContent || '');
+                    const warningMeta = alertsFeed.type === 'json'
+                        ? (alertsFeed.payload.items?.[0]?.title || 'SMG Weather Warning Signal')
+                        : (alertsFeed.payload.querySelector('item title')?.textContent || 'SMG Weather Warning Signal');
+
+                    const alertRows = extractAlertRows(alertDescription);
+                    const activeWarnings = alertRows.filter((entry) => !isInactiveWarning(entry.detail));
+
+                    if (staffTestWarning) {
+                        activeWarnings.unshift({
+                            type: `[TEST] ${staffTestWarning.type}`,
+                            detail: staffTestWarning.detail,
+                            updatedAt: staffTestWarning.updatedAt,
+                            signalImage: staffTestWarning.signalImage
+                        });
                     }
-                    renderForecastFromBlocks(forecastBlocks);
+
+                    const forecastDescription = forecastFeed.type === 'json'
+                        ? (forecastFeed.payload.items?.[0]?.description || '')
+                        : (forecastFeed.payload.querySelector('item description')?.textContent || '');
+                    const forecastBlocks = extractForecastBlocks(forecastDescription);
+
+                    const payload = {
+                        warnings: activeWarnings,
+                        warningMeta,
+                        forecastBlocks,
+                        signalFallback: fallbackSignalImage
+                    };
+
+                    renderWeatherPayload(payload);
+                    saveCachedWeatherPayload(payload);
                 } catch (error) {
-                    console.error('Error loading SMG RSS data:', error);
-                    alertsContainer.innerHTML = '<p>Error loading SMG weather alerts.</p>';
-                    forecastContainer.innerHTML = '<p>Error loading SMG daily forecast.</p>';
+                    console.error('Error loading SMG weather data:', error);
+
+                    if (cached && cached.data) {
+                        renderWeatherPayload(cached.data);
+                        return;
+                    }
+
+                    renderWarningSignals([], '', SMG_LOGO_URL);
+                    forecastContainer.innerHTML = '<p>Error loading weather forecast data.</p>';
                 }
             }
             
@@ -3834,15 +4143,14 @@
                 
                 // Check IP ban status
                 checkIPBanStatus();
-                
-                // Load weather data
-                loadWeatherData();
+
+                // Activate route-selected page in multi-page navigation
+                activatePage(getInitialPageFromRoute());
             }
             
             // Start the application
             init();
-            loadSmgRssData();
-            setInterval(loadSmgRssData, 300000);
+            setInterval(() => loadSmgRssData(true), 300000);
         });
     </script>
     
