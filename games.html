@@ -782,8 +782,8 @@
       position: absolute;
       right: 8px;
       bottom: 6px;
-      width: 42px;
-      height: 42px;
+      width: 64px;
+      height: 64px;
       object-fit: contain;
       opacity: 0.78;
       pointer-events: none;
@@ -6452,34 +6452,8 @@
       }
     }
 
-    const MOVIE_CATEGORY_CONFIG = [
-      {
-        key: 'Action',
-        gradient: 'linear-gradient(135deg, #ff763a 0%, #9b1f28 100%)',
-        art: 'https://img.icons8.com/fluency/96/clapperboard.png'
-      },
-      {
-        key: 'Animation',
-        gradient: 'linear-gradient(135deg, #37b3ff 0%, #2744d8 100%)',
-        art: 'https://img.icons8.com/fluency/96/popcorn.png'
-      },
-      {
-        key: 'Sci-Fi',
-        gradient: 'linear-gradient(135deg, #8f6dff 0%, #2a9a9f 100%)',
-        art: 'https://img.icons8.com/fluency/96/sci-fi.png'
-      }
-    ];
-    const DEFAULT_MOVIES = [
-      { id: 'm-action-1', title: 'John Wick: Chapter 4', category: 'Action', releaseYear: 2023, score: 8.2, banner: 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1200&q=80', url: 'https://www.youtube.com/embed/qEVUtrk8_B4', description: 'An elite assassin takes on the High Table.' },
-      { id: 'm-action-2', title: 'Mission: Impossible – Dead Reckoning', category: 'Action', releaseYear: 2023, score: 7.7, banner: 'https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?auto=format&fit=crop&w=1200&q=80', url: 'https://www.youtube.com/embed/avz06PDqDbM', description: 'Ethan Hunt races to stop a global AI threat.' },
-      { id: 'm-action-3', title: 'Top Gun: Maverick', category: 'Action', releaseYear: 2022, score: 8.3, banner: 'https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=1200&q=80', url: 'https://www.youtube.com/embed/giXco2jaZ_4', description: 'Maverick returns to train the next generation.' },
-      { id: 'm-animation-1', title: 'Spider-Man: Across the Spider-Verse', category: 'Animation', releaseYear: 2023, score: 8.6, banner: 'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=1200&q=80', url: 'https://www.youtube.com/embed/shW9i6k8cB0', description: 'Miles jumps into a multiverse of Spider heroes.' },
-      { id: 'm-animation-2', title: 'The Super Mario Bros. Movie', category: 'Animation', releaseYear: 2023, score: 7.4, banner: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1200&q=80', url: 'https://www.youtube.com/embed/TnGl01FkMMo', description: 'Mario and Luigi enter the Mushroom Kingdom.' },
-      { id: 'm-animation-3', title: 'Elemental', category: 'Animation', releaseYear: 2023, score: 7.0, banner: 'https://images.unsplash.com/photo-1517602302552-471fe67acf66?auto=format&fit=crop&w=1200&q=80', url: 'https://www.youtube.com/embed/hXzcyx9V0xw', description: 'A romance sparks in a city of elements.' },
-      { id: 'm-sci-fi-1', title: 'Dune: Part Two', category: 'Sci-Fi', releaseYear: 2024, score: 8.8, banner: 'https://images.unsplash.com/photo-1502136969935-8d8eef54d77b?auto=format&fit=crop&w=1200&q=80', url: 'https://www.youtube.com/embed/U2Qp5pL3ovA', description: 'Paul Atreides rises to confront an empire.' },
-      { id: 'm-sci-fi-2', title: 'The Creator', category: 'Sci-Fi', releaseYear: 2023, score: 7.1, banner: 'https://images.unsplash.com/photo-1616531770192-6eaea74c2456?auto=format&fit=crop&w=1200&q=80', url: 'https://www.youtube.com/embed/ex3C1-5Dhb8', description: 'A soldier hunts an AI weapon with child form.' },
-      { id: 'm-sci-fi-3', title: 'Interstellar', category: 'Sci-Fi', releaseYear: 2014, score: 8.7, banner: 'https://images.unsplash.com/photo-1446776877081-d282a0f896e2?auto=format&fit=crop&w=1200&q=80', url: 'https://www.youtube.com/embed/zSWdZVtXT7E', description: 'A team travels beyond Earth to save humanity.' }
-    ];
+    const MOVIE_CATEGORY_CONFIG = [];
+    const DEFAULT_MOVIES = [];
     const BASE_FRAME_ALLOWED_HOSTS = new Set([
       String(window.location.hostname || '').toLowerCase(),
       'www.youtube.com',
@@ -6490,9 +6464,10 @@
     ]);
 
     function normalizeMovieCategory(value, categories = MOVIE_CATEGORY_CONFIG) {
-      const pool = (Array.isArray(categories) && categories.length) ? categories : MOVIE_CATEGORY_CONFIG;
+      const pool = (Array.isArray(categories) && categories.length) ? categories : [];
       const keysLower = pool.map((cfg) => String(cfg.key || '').toLowerCase());
       const raw = String(value || '').trim();
+      if (!pool.length) return raw || 'Uncategorized';
       if (!raw) return pool[0].key;
       const lower = raw.toLowerCase();
       for (const cfg of pool) {
@@ -6507,7 +6482,7 @@
         const i = keysLower.findIndex((k) => k.includes('sci'));
         if (i >= 0) return pool[i].key;
       }
-      return pool[0].key;
+      return raw || pool[0].key;
     }
 
     function movieNewestComparator(a, b) {
@@ -6566,7 +6541,7 @@
       } catch (e) {
         console.warn('Movie categories load failed, using defaults.', e);
       }
-      appMovieCategoriesCache = MOVIE_CATEGORY_CONFIG.map((cfg, i) => ({ ...cfg, order: i }));
+      appMovieCategoriesCache = [];
       return appMovieCategoriesCache;
     }
 
@@ -7136,7 +7111,7 @@
     }
 
     function buildMoviesData(movieItems, categories) {
-      const categoryConfig = (Array.isArray(categories) && categories.length) ? categories : MOVIE_CATEGORY_CONFIG;
+      const categoryConfig = (Array.isArray(categories) && categories.length) ? categories : [];
       const moviesByCategory = {};
       categoryConfig.forEach((cfg) => { moviesByCategory[cfg.key] = []; });
       (movieItems || []).forEach((movie) => {
@@ -7145,13 +7120,21 @@
         moviesByCategory[fixed.category].push(fixed);
       });
       Object.keys(moviesByCategory).forEach((cat) => moviesByCategory[cat].sort(movieNewestComparator));
-      const topMovies = categoryConfig
+      const inferredCategories = categoryConfig.length
+        ? categoryConfig
+        : Object.keys(moviesByCategory).map((key, idx) => ({
+            key,
+            gradient: 'linear-gradient(135deg, #2f5ca3 0%, #1a2e58 100%)',
+            art: '',
+            order: idx
+          }));
+      const topMovies = inferredCategories
         .map((cfg) => {
           const pick = [...(moviesByCategory[cfg.key] || [])].sort(movieTopComparator)[0];
           return pick ? { ...pick, rankCategory: cfg.key } : null;
         })
         .filter(Boolean);
-      const normalizedCategories = categoryConfig.map((cfg, idx) => ({
+      const normalizedCategories = inferredCategories.map((cfg, idx) => ({
         ...cfg,
         order: Number.isFinite(Number(cfg.order)) ? Number(cfg.order) : idx,
         count: (moviesByCategory[cfg.key] || []).length
@@ -7166,7 +7149,7 @@
         const fromDb = snap.docs.map((d) => normalizeMovieDoc({ id: d.id, ...d.data() }, d.id, categoryConfig));
         if (fromDb.length) return buildMoviesData(fromDb, categoryConfig);
       } catch (e) {
-        console.warn('Movies collection load failed, using defaults.', e);
+        console.warn('Movies collection load failed.', e);
       }
       const fallback = DEFAULT_MOVIES.map((m) => normalizeMovieDoc(m, m.id, categoryConfig));
       return buildMoviesData(fallback, categoryConfig);
@@ -7267,7 +7250,7 @@
 
     function renderMovieGridCards() {
       if (!movieGrid || !appMoviesDataCache) return;
-      const selected = activeMovieCategory || appMoviesDataCache.categories?.[0]?.key || MOVIE_CATEGORY_CONFIG[0].key;
+      const selected = activeMovieCategory || appMoviesDataCache.categories?.[0]?.key || '';
       const selectedList = [...(appMoviesDataCache.moviesByCategory[selected] || [])]
         .sort(movieNewestComparator)
         .filter((movie) => String(movie.title || '').toLowerCase().includes(movieSearchQuery));
@@ -7318,7 +7301,7 @@
         movieSearchInput.value = movieSearchQuery;
       }
       if (!activeMovieCategory || !moviesData.moviesByCategory[activeMovieCategory]) {
-        activeMovieCategory = moviesData.categories[0]?.key || MOVIE_CATEGORY_CONFIG[0].key;
+        activeMovieCategory = moviesData.categories[0]?.key || '';
       }
       renderMovieGridCards();
     }
@@ -7361,29 +7344,49 @@
       'inventory-page', 'missions-page', 'chat-page', 'friends-page',
       'settings-page', 'staff-page', 'view-profile-page', 'home', 'contact'
     ]);
+    let isApplyingRoute = false;
 
-    function setRouteHash(routeId) {
+    function setRouteHash(routeId, options = {}) {
       const id = String(routeId || '').trim();
       if (!PAGE_ROUTE_IDS.has(id)) return;
-      const nextHash = `#${encodeURIComponent(id)}`;
-      if (window.location.hash === nextHash) return;
-      window.history.replaceState(null, '', nextHash);
+      const url = new URL(window.location.href);
+      url.searchParams.set('page', id);
+      const nextPath = `${url.pathname}?${url.searchParams.toString()}`;
+      const currentPath = `${window.location.pathname}${window.location.search}`;
+      if (options.reload) {
+        if (nextPath === currentPath) {
+          window.location.reload();
+        } else {
+          window.location.assign(nextPath);
+        }
+        return;
+      }
+      if (nextPath !== currentPath) {
+        window.history.replaceState(null, '', nextPath);
+      }
     }
 
     function routeByHash() {
-      const raw = decodeURIComponent((window.location.hash || '').replace(/^#/, '')).trim();
+      const rawParam = new URLSearchParams(window.location.search).get('page');
+      const raw = String(rawParam || decodeURIComponent((window.location.hash || '').replace(/^#/, '')) || '').trim();
       if (!raw) return;
       if (raw === 'home') {
+        isApplyingRoute = true;
         homeTab?.click();
+        isApplyingRoute = false;
         return;
       }
       if (raw === 'contact') {
+        isApplyingRoute = true;
         contactTab?.click();
+        isApplyingRoute = false;
         return;
       }
       const routeBtn = document.querySelector(`.sidebar-tabs .tab-button[data-page="${raw}"]`);
       if (routeBtn) {
+        isApplyingRoute = true;
         routeBtn.click();
+        isApplyingRoute = false;
         return;
       }
       const directPage = document.getElementById(raw);
@@ -7571,6 +7574,10 @@
     const contactSectionEl = document.getElementById('contact-section');
     homeTab.addEventListener('click', (e) => {
       e.preventDefault();
+      if (!isApplyingRoute) {
+        setRouteHash('home', { reload: true });
+        return;
+      }
       categorySection.style.display = 'block';
       fullGamesListSec.style.display = 'block';
       contactSectionEl.classList.remove('active');
@@ -7581,6 +7588,10 @@
     });
     contactTab.addEventListener('click', (e) => {
       e.preventDefault();
+      if (!isApplyingRoute) {
+        setRouteHash('contact', { reload: true });
+        return;
+      }
       categorySection.style.display = 'none';
       fullGamesListSec.style.display = 'none';
       contactSectionEl.classList.add('active');
@@ -7645,6 +7656,10 @@
       button.addEventListener('click', () => {
         const pageId = button.getAttribute('data-page');
         if (!pageId) return;
+        if (!isApplyingRoute) {
+          setRouteHash(pageId, { reload: true });
+          return;
+        }
         if (!currentUser && pageId !== 'main-page' && pageId !== 'movies-page') { noticeModal.style.display = 'flex'; return; }
         document.querySelectorAll('.sidebar-tabs .tab-button').forEach(btn => btn.classList.remove('active'));
         document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
@@ -10909,9 +10924,12 @@
     function populateStaffMovieCategorySelect(active) {
       const sel = document.getElementById('staff-movie-category');
       if (!sel) return;
-      const source = staffMovieCategoriesCache.length
-        ? staffMovieCategoriesCache
-        : MOVIE_CATEGORY_CONFIG.map((x, i) => ({ ...x, order: i }));
+      const source = staffMovieCategoriesCache.length ? staffMovieCategoriesCache : [];
+      if (!source.length) {
+        sel.innerHTML = '<option value="">No categories yet</option>';
+        sel.value = '';
+        return;
+      }
       sel.innerHTML = source.map((cat) => `<option value="${escapeHtml(cat.key)}">${escapeHtml(cat.key)}</option>`).join('');
       const desired = active || source[0]?.key || '';
       if (desired) sel.value = desired;
@@ -11027,9 +11045,7 @@
 
     async function loadStaffMovies() {
       if (!hasPermission('manage_games')) return;
-      const cats = staffMovieCategoriesCache.length
-        ? staffMovieCategoriesCache
-        : MOVIE_CATEGORY_CONFIG.map((x, i) => ({ ...x, order: i }));
+      const cats = staffMovieCategoriesCache.length ? staffMovieCategoriesCache : [];
       const snap = await getDocs(collection(db, 'movies'));
       staffMoviesCache = snap.docs.map((d) => normalizeMovieDoc({ id: d.id, ...d.data() }, d.id, cats));
       staffMoviesCache.sort(movieNewestComparator);
@@ -11450,7 +11466,7 @@
       document.getElementById('staff-save-movie-btn')?.addEventListener('click', async () => {
         const id = document.getElementById('staff-movie-id')?.value || '';
         const title = document.getElementById('staff-movie-title')?.value.trim() || '';
-        const category = document.getElementById('staff-movie-category')?.value || staffMovieCategoriesCache[0]?.key || MOVIE_CATEGORY_CONFIG[0].key;
+        const category = document.getElementById('staff-movie-category')?.value || staffMovieCategoriesCache[0]?.key || '';
         const releaseYear = parseInt(document.getElementById('staff-movie-year')?.value, 10) || new Date().getFullYear();
         const scoreRaw = parseFloat(document.getElementById('staff-movie-score')?.value);
         const score = Number.isFinite(scoreRaw) ? Math.max(0, Math.min(10, Number(scoreRaw.toFixed(1)))) : 0;
@@ -11458,6 +11474,7 @@
         const url = document.getElementById('staff-movie-url')?.value.trim() || '';
         const description = document.getElementById('staff-movie-desc')?.value.trim() || '';
         if (!title) { showNotification('Movie title is required', 'error'); return; }
+        if (!category) { showNotification('Create/select a movie category first', 'error'); return; }
         const payload = { title, category, releaseYear, score, banner, url, description, updatedAt: serverTimestamp() };
         try {
           if (id) await updateDoc(doc(db, 'movies', id), payload);
@@ -11899,15 +11916,18 @@
     async function init() {
       await refreshRarityOrderFromServer();
       applyFixedSiteTheme();
-      appGamesDataCache = await getGames();
-      appMoviesDataCache = await getMovies();
-      ensureMainPageGamesDeferredObserver();
+      const requested = String(new URLSearchParams(window.location.search).get('page') || '').trim();
+      if (requested === 'movies-page') {
+        await mountMoviesPageContent();
+      } else if (requested === 'main-page' || requested === 'home' || requested === 'contact' || !requested) {
+        ensureMainPageGamesDeferredObserver();
+      }
       hidePageLoading();
     }
 
     init().catch(() => hidePageLoading());
     setTimeout(hidePageLoading, 12000);
-    window.addEventListener('hashchange', routeByHash);
+    window.addEventListener('popstate', routeByHash);
     setTimeout(routeByHash, 0);
     // ========== Event Listeners ==========
     document.addEventListener('fullscreenchange', syncGameFullscreenUi);
