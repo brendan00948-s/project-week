@@ -1017,6 +1017,21 @@
       flex-wrap: wrap;
       gap: 9px;
     }
+    .movie-info-preview {
+      width: min(100%, 440px);
+      aspect-ratio: 16 / 9;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(151, 218, 255, 0.35);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+      background: rgba(7, 12, 19, 0.9);
+    }
+    .movie-info-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
     .movie-info-chip {
       display: inline-flex;
       align-items: center;
@@ -6213,6 +6228,9 @@
             <span class="movie-info-chip"><i class="fas fa-calendar-alt" aria-hidden="true"></i><span id="movieInfoYear">Year</span></span>
             <span class="movie-info-chip"><i class="fas fa-star" aria-hidden="true"></i><span id="movieInfoScore">Score</span></span>
           </div>
+          <div class="movie-info-preview">
+            <img id="movieInfoPreviewImage" src="" alt="Movie banner preview" loading="lazy">
+          </div>
           <p class="movie-info-desc" id="movieInfoDescription">No description available yet.</p>
           <div class="movie-info-actions">
             <button type="button" class="movie-info-watch-btn" id="movieInfoWatchBtn">WATCH MOVIE</button>
@@ -6472,6 +6490,7 @@
     const confirmModal = document.getElementById('confirmModal');
     const movieInfoModal = document.getElementById('movieInfoModal');
     const movieInfoBackground = document.getElementById('movieInfoBackground');
+    const movieInfoPreviewImage = document.getElementById('movieInfoPreviewImage');
     const movieInfoTitleEl = document.getElementById('movieInfoTitle');
     const movieInfoCategoryEl = document.getElementById('movieInfoCategory');
     const movieInfoYearEl = document.getElementById('movieInfoYear');
@@ -7276,9 +7295,15 @@
       if (movieInfoDescriptionEl) {
         movieInfoDescriptionEl.textContent = String(movie.description || 'No description available yet.');
       }
+      const bannerUrl = String(movie.banner || '').trim();
+      const safeBannerCssUrl = bannerUrl.replace(/"/g, '\\"');
+      if (movieInfoPreviewImage) {
+        movieInfoPreviewImage.src = bannerUrl || '';
+        movieInfoPreviewImage.style.visibility = bannerUrl ? 'visible' : 'hidden';
+        movieInfoPreviewImage.alt = bannerUrl ? `${String(movie.title || 'Movie')} banner preview` : 'No movie banner available';
+      }
       if (movieInfoBackground) {
-        const bg = movie.banner ? mediaThumbUrl(movie.banner, 1600, 84) : '';
-        movieInfoBackground.style.backgroundImage = bg ? `url(${JSON.stringify(bg)})` : 'none';
+        movieInfoBackground.style.backgroundImage = bannerUrl ? `url("${safeBannerCssUrl}")` : 'none';
       }
       if (movieInfoWatchBtn) {
         const canWatch = Boolean(String(movie.url || '').trim());
