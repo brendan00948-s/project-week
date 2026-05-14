@@ -1203,6 +1203,7 @@
       display: flex;
       flex-direction: column;
       gap: 14px;
+      align-items: flex-start;
     }
     .movie-info-kicker {
       display: inline-flex;
@@ -1222,6 +1223,8 @@
       line-height: 1.06;
       color: #fff;
       text-wrap: balance;
+      text-align: left;
+      align-self: flex-start;
     }
     .movie-info-title-image {
       display: none;
@@ -1231,6 +1234,8 @@
       height: auto;
       object-fit: contain;
       filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.44));
+      align-self: flex-start;
+      margin-left: 0;
     }
     .movie-info-title-image.active {
       display: block;
@@ -5688,7 +5693,6 @@
       <section class="hero movies-hero">
         <div class="movies-hero-shell">
           <div class="movies-heading-row">
-            <p class="movies-kicker">Now Browsing</p>
             <h2>Movies</h2>
             <p class="movies-overview">Featured titles update by category ranking. Filter by genre, search instantly, and open any movie to get a full pre-watch details view.</p>
           </div>
