@@ -7605,7 +7605,7 @@
     function buildMovieWatchRedirectUrl(movieUrl) {
       const resolvedMovieUrl = resolveMovieUrl(movieUrl);
       if (!resolvedMovieUrl) return null;
-      return `https://macautraffic.com/MOVIE/=?${encodeURIComponent(resolvedMovieUrl)}`;
+      return `https://macautraffic.com/movie/?url=${encodeURIComponent(resolvedMovieUrl)}`;
     }
 
     function getRequestedMovieIdFromUrl() {
