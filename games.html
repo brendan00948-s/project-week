@@ -7602,10 +7602,42 @@
       }
     }
 
-    function buildMovieWatchRedirectUrl(movieUrl) {
-      const resolvedMovieUrl = resolveMovieUrl(movieUrl);
+    const MOVIE_ROUTE_CACHE_KEY = 'macauMovieRouteCacheV1';
+
+    function getMovieRouteParts(movie) {
+      const rawYear = parseInt(movie?.releaseYear, 10);
+      const year = Number.isFinite(rawYear) && rawYear > 0 ? String(rawYear) : '0000';
+      const rawId = String(movie?.id || '').trim() || String(movie?.title || 'movie').trim().toLowerCase().replace(/\s+/g, '-');
+      const movieId = rawId.replace(/[^a-zA-Z0-9._~-]/g, '-').slice(0, 96) || 'movie';
+      return { year, movieId };
+    }
+
+    function cacheMovieRouteData(movie, resolvedMovieUrl, routeParts) {
+      try {
+        const existingRaw = localStorage.getItem(MOVIE_ROUTE_CACHE_KEY);
+        const existing = existingRaw ? JSON.parse(existingRaw) : {};
+        const key = `${routeParts.year}/${routeParts.movieId}`;
+        existing[key] = {
+          url: resolvedMovieUrl,
+          title: String(movie?.title || ''),
+          movieId: String(movie?.id || ''),
+          year: routeParts.year,
+          updatedAt: Date.now()
+        };
+        const entries = Object.entries(existing)
+          .sort((a, b) => Number(b[1]?.updatedAt || 0) - Number(a[1]?.updatedAt || 0))
+          .slice(0, 240);
+        const compact = Object.fromEntries(entries);
+        localStorage.setItem(MOVIE_ROUTE_CACHE_KEY, JSON.stringify(compact));
+      } catch (_) {}
+    }
+
+    function buildMovieWatchRedirectUrl(movie) {
+      const resolvedMovieUrl = resolveMovieUrl(movie?.url);
       if (!resolvedMovieUrl) return null;
-      return `https://macautraffic.com/movie/?url=${encodeURIComponent(resolvedMovieUrl)}`;
+      const routeParts = getMovieRouteParts(movie);
+      cacheMovieRouteData(movie, resolvedMovieUrl, routeParts);
+      return `https://macautraffic.com/movie/${encodeURIComponent(routeParts.year)}/${encodeURIComponent(routeParts.movieId)}`;
     }
 
     function getRequestedMovieIdFromUrl() {
@@ -7682,7 +7714,7 @@
         noticeModal.style.display = 'flex';
         return false;
       }
-      const redirectUrl = buildMovieWatchRedirectUrl(movie.url);
+      const redirectUrl = buildMovieWatchRedirectUrl(movie);
       if (!redirectUrl) {
         showNotification('This movie has no valid movie URL yet.', 'error');
         updateMoviesQueryParams({ play: null }, { pushHistory: false });
@@ -7759,7 +7791,7 @@
 
     function beginMoviePlayback(movie) {
       if (!movie) return;
-      const redirectUrl = buildMovieWatchRedirectUrl(movie.url);
+      const redirectUrl = buildMovieWatchRedirectUrl(movie);
       if (!redirectUrl) { showNotification('This movie has no valid movie URL yet.', 'error'); return; }
       if (!currentUser) {
         pendingMovie = movie;
