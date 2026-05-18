@@ -85,28 +85,12 @@
       const playerShell = document.getElementById("playerShell");
       const statusMessage = document.getElementById("statusMessage");
       const params = new URLSearchParams(window.location.search);
-      const CACHE_KEY = "macauMovieRouteCacheV1";
-      const pathParts = window.location.pathname.split("/").filter(Boolean);
-      const movieIndex = pathParts.findIndex((p) => p.toLowerCase() === "movie");
-      const routeYear = movieIndex >= 0 ? String(pathParts[movieIndex + 1] || "").trim() : "";
-      const routeMovieId = movieIndex >= 0 ? String(pathParts[movieIndex + 2] || "").trim() : "";
-      const safeDecode = (value) => {
-        try { return decodeURIComponent(String(value || "")); } catch (_) { return String(value || ""); }
-      };
-      const routeKey = routeYear && routeMovieId ? `${safeDecode(routeYear)}/${safeDecode(routeMovieId)}` : "";
 
       // Support both modern and legacy patterns:
       // /movie/?url=<encoded>
       // /movie/=?<encoded>
       // /movie/?<encoded>
       let movieUrl = String(params.get("url") || params.get("u") || "").trim();
-      if (!movieUrl && routeKey) {
-        try {
-          const raw = localStorage.getItem(CACHE_KEY);
-          const cache = raw ? JSON.parse(raw) : {};
-          movieUrl = String(cache?.[routeKey]?.url || "").trim();
-        } catch (_) {}
-      }
       if (!movieUrl) {
         const rawQuery = String(window.location.search || "").replace(/^\?/, "");
         if (rawQuery.startsWith("=")) movieUrl = rawQuery.slice(1);
@@ -124,16 +108,7 @@
       }
 
       // Keep back target stable and fast.
-      const backMovieId = String((function () {
-        try {
-          const raw = localStorage.getItem(CACHE_KEY);
-          const cache = raw ? JSON.parse(raw) : {};
-          return cache?.[routeKey]?.movieId || "";
-        } catch (_) {
-          return "";
-        }
-      })()).trim();
-      backBtn.href = backMovieId ? `/games.html?page=movies-page&movie=${encodeURIComponent(backMovieId)}` : "/games.html?page=movies-page";
+      backBtn.href = "/games.html?page=movies-page";
 
       const frame = document.createElement("iframe");
       frame.className = "movie-frame";

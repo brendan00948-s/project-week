@@ -7,14 +7,6 @@
   <script>
     (function () {
       const target = new URL("/movie/", window.location.origin);
-      const parts = window.location.pathname.split("/").filter(Boolean);
-      const marker = parts.findIndex((p) => p.toLowerCase() === "movie");
-      const first = marker >= 0 ? parts[marker + 1] : "";
-      const second = marker >= 0 ? parts[marker + 2] : "";
-      if (first && first.toLowerCase() !== "index.html") {
-        target.pathname = `/movie/${encodeURIComponent(first)}`;
-        if (second) target.pathname += `/${encodeURIComponent(second)}`;
-      }
       const raw = String(window.location.search || "").replace(/^\?/, "");
       if (raw.startsWith("=")) {
         try {
