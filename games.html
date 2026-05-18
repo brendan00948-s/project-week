@@ -4355,6 +4355,38 @@
       width: 100%;
       margin-top: 10px;
     }
+    .auth-btn-secondary {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid #2E3A48;
+      margin-top: 8px;
+    }
+    .auth-btn-secondary:hover {
+      border-color: var(--neon-green);
+      color: #fff;
+    }
+    .login-step-pill {
+      display: inline-block;
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--neon-green);
+      margin-bottom: 10px;
+      font-weight: 800;
+    }
+    .login-wizard-email-preview {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      margin: 0 0 8px;
+      word-break: break-all;
+    }
+    .login-wizard-hint {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      line-height: 1.45;
+      text-align: left;
+      margin: 0 0 12px;
+    }
     .switch-auth {
       margin-top: 15px;
       font-size: 0.8rem;
@@ -6646,13 +6678,23 @@
       </div>
     </div>
 
-    <!-- Login Modal -->
+    <!-- Login Modal (email first → password; path depends on Firestore password state) -->
     <div id="loginModal" class="auth-modal">
       <div class="auth-modal-content">
         <h3><i class="fas fa-sign-in-alt"></i> Login</h3>
-        <input type="email" id="loginEmail" class="auth-input" placeholder="Email">
-        <input type="password" id="loginPassword" class="auth-input" placeholder="Password">
-        <button id="loginBtn" class="auth-btn">Login</button>
+        <div id="loginWizardStep1">
+          <div class="login-step-pill">Step 1 of 2 — Email</div>
+          <input type="email" id="loginEmail" class="auth-input" placeholder="Email" autocomplete="username">
+          <button type="button" id="loginEmailNextBtn" class="auth-btn">Continue</button>
+        </div>
+        <div id="loginWizardStep2" style="display: none;">
+          <div class="login-step-pill">Step 2 of 2 — Password</div>
+          <p id="loginWizardEmailPreview" class="login-wizard-email-preview" aria-live="polite"></p>
+          <p id="loginWizardHint" class="login-wizard-hint"></p>
+          <input type="password" id="loginPassword" class="auth-input" placeholder="Password" autocomplete="current-password">
+          <button type="button" id="loginBtn" class="auth-btn">Log in</button>
+          <button type="button" id="loginWizardBackBtn" class="auth-btn auth-btn-secondary">Change email</button>
+        </div>
         <div class="switch-auth">Don't have an account? <a id="showSignup">Sign up</a></div>
         <button class="close-modal" id="closeLoginModal">Cancel</button>
       </div>
@@ -6685,13 +6727,13 @@
     <!-- Password Migration Modal -->
     <div id="passwordMigrationModal" class="auth-modal">
       <div class="auth-modal-content">
-        <h3><i class="fas fa-shield-alt"></i> Password Update Required</h3>
+        <h3><i class="fas fa-shield-alt"></i> Create your Game password</h3>
         <p style="font-size:0.8rem;color:var(--text-secondary);line-height:1.45;text-align:left;margin-bottom:12px;">
-          Security update: please set your new password now. This one-time update is required before continuing.
+          One-time setup: create your <strong>Game password</strong> (saved to your Firestore profile). Your sign-in password is updated to match. After this, use this Game password on the login screen — not an old account-only password.
         </p>
         <input type="password" id="passwordMigrationNew" class="auth-input" placeholder="New password (min 6 chars)">
         <input type="password" id="passwordMigrationConfirm" class="auth-input" placeholder="Confirm new password">
-        <button id="passwordMigrationSaveBtn" class="auth-btn">Save New Password</button>
+        <button id="passwordMigrationSaveBtn" class="auth-btn">Save Game password</button>
       </div>
     </div>
 
@@ -6950,6 +6992,7 @@
       getAuth,     
       createUserWithEmailAndPassword,     
       signInWithEmailAndPassword,     
+      fetchSignInMethodsForEmail,
       signOut,     
       onAuthStateChanged,     
       updatePassword,     
@@ -7139,6 +7182,12 @@
     // DOM elements (abbreviated for brevity – all exist in the HTML)
     const noticeModal = document.getElementById('noticeModal');
     const loginModal = document.getElementById('loginModal');
+    const loginWizardStep1 = document.getElementById('loginWizardStep1');
+    const loginWizardStep2 = document.getElementById('loginWizardStep2');
+    const loginWizardEmailPreview = document.getElementById('loginWizardEmailPreview');
+    const loginWizardHint = document.getElementById('loginWizardHint');
+    const loginEmailNextBtn = document.getElementById('loginEmailNextBtn');
+    const loginWizardBackBtn = document.getElementById('loginWizardBackBtn');
     const signupModal = document.getElementById('signupModal');
     const passwordMigrationModal = document.getElementById('passwordMigrationModal');
     const passwordMigrationNewInput = document.getElementById('passwordMigrationNew');
@@ -7326,6 +7375,9 @@
     /** Set true only for email login/signup so we navigate to Profile once (not on every auth refresh). */
     let redirectToProfileAfterAuth = false;
     let passwordMigrationPromptUid = null;
+    let loginWizardResolvedEmail = '';
+    /** @type {'firestore' | 'auth_first' | 'unknown'} */
+    let loginWizardPath = 'unknown';
 
     /** Resize/compress remote images via wsrv.nl (smaller downloads for game art, blooks, pack UI). */
     function mediaThumbUrl(url, maxEdge, quality) {
@@ -7671,7 +7723,7 @@
       if (passwordMigrationConfirmInput) passwordMigrationConfirmInput.value = '';
       if (passwordMigrationSaveBtn) {
         passwordMigrationSaveBtn.disabled = false;
-        passwordMigrationSaveBtn.textContent = 'Save New Password';
+        passwordMigrationSaveBtn.textContent = 'Save Game password';
       }
     }
 
@@ -7913,6 +7965,8 @@
           if (!d0.displayId || String(d0.displayId).length !== 6) patch.displayId = await ensureUniqueDisplayId();
           if (!Array.isArray(d0.ownedBannerIds)) patch.ownedBannerIds = [];
           if (!Object.prototype.hasOwnProperty.call(d0, 'passwordMigrationRequired')) patch.passwordMigrationRequired = true;
+          const plainFs0 = String(d0.passwordPlaintext || '').trim();
+          if (!plainFs0 && d0.passwordMigrationRequired !== true) patch.passwordMigrationRequired = true;
           if (!d0.passwordMigrationVersion) patch.passwordMigrationVersion = PASSWORD_MIGRATION_VERSION;
           if (Object.keys(patch).length) await updateDoc(doc(db, "users", user.uid), patch);
           mergedUserData = { ...d0, ...patch };
@@ -8029,6 +8083,136 @@
       }
     });
 
+    function resetLoginWizard() {
+      loginWizardResolvedEmail = '';
+      loginWizardPath = 'unknown';
+      if (loginWizardStep1) loginWizardStep1.style.display = '';
+      if (loginWizardStep2) loginWizardStep2.style.display = 'none';
+      const pw = document.getElementById('loginPassword');
+      if (pw) pw.value = '';
+    }
+
+    function openLoginModalFresh() {
+      resetLoginWizard();
+      if (loginModal) loginModal.style.display = 'flex';
+    }
+
+    function setLoginWizardPasswordHint(path) {
+      if (!loginWizardHint) return;
+      if (path === 'firestore') {
+        loginWizardHint.innerHTML = 'Use your <strong>Game password</strong> (saved on your account in Firestore). This is what you use here after setup — including if you changed it in Settings.';
+      } else if (path === 'auth_first') {
+        loginWizardHint.innerHTML = 'Use your <strong>original Firebase account password</strong> for this step. After you sign in, you must create your <strong>Game password</strong> once; <strong>later logins use that Game password only</strong> (your old account-only password will no longer apply once you set a new one).';
+      } else {
+        loginWizardHint.innerHTML = 'Enter the password for this email. If you have not finished the one-time Game password setup, use your existing account password first; you will be prompted to set your Game password after.';
+      }
+    }
+
+    async function probeLoginEmailForWizard(rawEmail) {
+      const email = String(rawEmail || '').trim();
+      if (!email) return { ok: false, code: 'empty' };
+      const emailLower = email.toLowerCase();
+      let methods = [];
+      try {
+        methods = await fetchSignInMethodsForEmail(auth, email);
+      } catch (e) {
+        return { ok: false, code: 'lookup_failed', message: e?.message || String(e) };
+      }
+      if (!methods.length) return { ok: false, code: 'no_account' };
+      const hasPassword = methods.includes('password');
+      const hasEmailLink = methods.includes('emailLink');
+      if (!hasPassword && !hasEmailLink) {
+        return { ok: false, code: 'unsupported_provider' };
+      }
+      let loginPath = 'unknown';
+      try {
+        const bridgeQ = query(
+          collection(db, AUTH_BRIDGE_COLLECTION),
+          where('emailLower', '==', emailLower),
+          limit(1)
+        );
+        const snap = await getDocs(bridgeQ);
+        if (!snap.empty) {
+          const d = snap.docs[0].data() || {};
+          const pw = d.password || {};
+          const plain = String(pw.plaintext || '').trim();
+          const required = pw.required === true;
+          if (plain.length > 0 && !required) loginPath = 'firestore';
+          else loginPath = 'auth_first';
+        } else {
+          loginPath = 'auth_first';
+        }
+      } catch (e) {
+        console.warn('Login path probe (authUsers):', e);
+        loginPath = 'unknown';
+      }
+      return { ok: true, email, loginPath };
+    }
+
+    loginEmailNextBtn?.addEventListener('click', async () => {
+      const emailInput = document.getElementById('loginEmail');
+      const raw = emailInput ? emailInput.value.trim() : '';
+      if (!raw) {
+        showNotification('Enter your email first', 'error');
+        return;
+      }
+      if (loginEmailNextBtn) {
+        loginEmailNextBtn.disabled = true;
+        loginEmailNextBtn.textContent = 'Checking...';
+      }
+      try {
+        const result = await probeLoginEmailForWizard(raw);
+        if (!result.ok) {
+          if (result.code === 'no_account') {
+            showNotification('No account found for that email. Sign up instead.', 'error');
+          } else if (result.code === 'unsupported_provider') {
+            showNotification('This account uses a sign-in method not supported on this screen.', 'error');
+          } else {
+            showNotification(result.message || 'Could not verify email. Try again.', 'error');
+          }
+          return;
+        }
+        loginWizardResolvedEmail = result.email;
+        loginWizardPath = result.loginPath || 'unknown';
+        if (loginWizardEmailPreview) loginWizardEmailPreview.textContent = result.email;
+        setLoginWizardPasswordHint(loginWizardPath);
+        if (loginWizardStep1) loginWizardStep1.style.display = 'none';
+        if (loginWizardStep2) loginWizardStep2.style.display = '';
+        const pw = document.getElementById('loginPassword');
+        if (pw) {
+          pw.value = '';
+          pw.focus();
+        }
+      } finally {
+        if (loginEmailNextBtn) {
+          loginEmailNextBtn.disabled = false;
+          loginEmailNextBtn.textContent = 'Continue';
+        }
+      }
+    });
+
+    loginWizardBackBtn?.addEventListener('click', () => {
+      if (loginWizardStep2) loginWizardStep2.style.display = 'none';
+      if (loginWizardStep1) loginWizardStep1.style.display = '';
+      loginWizardResolvedEmail = '';
+      loginWizardPath = 'unknown';
+      const pw = document.getElementById('loginPassword');
+      if (pw) pw.value = '';
+    });
+
+    document.getElementById('loginEmail')?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        loginEmailNextBtn?.click();
+      }
+    });
+    document.getElementById('loginPassword')?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        document.getElementById('loginBtn')?.click();
+      }
+    });
+
     document.getElementById('signupBtn').addEventListener('click', async () => {
       const username = document.getElementById('signupUsername').value.trim();
       const email = document.getElementById('signupEmail').value.trim();
@@ -8058,29 +8242,46 @@
       }
     });
 
-    document.getElementById('loginBtn').addEventListener('click', async () => {
-      const email = document.getElementById('loginEmail').value.trim();
-      const password = document.getElementById('loginPassword').value;
-      if (!email || !password) { showNotification("Enter email and password", "error"); return; }
+    document.getElementById('loginBtn')?.addEventListener('click', async () => {
+      const email = String(loginWizardResolvedEmail || '').trim();
+      const password = document.getElementById('loginPassword')?.value || '';
+      if (!email || !password) {
+        showNotification('Enter your password to continue', 'error');
+        return;
+      }
       try {
         redirectToProfileAfterAuth = true;
         const cred = await signInWithEmailAndPassword(auth, email, password);
         await syncAuthIdentityToFirestore(cred.user, { event: 'login', forceProfileMirror: true });
         loginModal.style.display = 'none';
-        showNotification("Login successful!", "success");
+        resetLoginWizard();
+        showNotification('Login successful!', 'success');
       } catch (error) {
         redirectToProfileAfterAuth = false;
-        showNotification(error.message, "error");
+        showNotification(error.message, 'error');
       }
     });
 
     logoutBtn.addEventListener('click', async () => { await signOut(auth); showNotification("Logged out", "success"); });
 
-    document.getElementById('showSignup').addEventListener('click', () => { loginModal.style.display = 'none'; signupModal.style.display = 'flex'; });
-    document.getElementById('showLogin').addEventListener('click', () => { signupModal.style.display = 'none'; loginModal.style.display = 'flex'; });
-    document.getElementById('closeLoginModal').addEventListener('click', () => { loginModal.style.display = 'none'; });
+    document.getElementById('showSignup').addEventListener('click', () => {
+      loginModal.style.display = 'none';
+      resetLoginWizard();
+      signupModal.style.display = 'flex';
+    });
+    document.getElementById('showLogin').addEventListener('click', () => {
+      signupModal.style.display = 'none';
+      openLoginModalFresh();
+    });
+    document.getElementById('closeLoginModal').addEventListener('click', () => {
+      loginModal.style.display = 'none';
+      resetLoginWizard();
+    });
     document.getElementById('closeSignupModal').addEventListener('click', () => { signupModal.style.display = 'none'; });
-    document.getElementById('noticeLoginBtn').addEventListener('click', () => { noticeModal.style.display = 'none'; loginModal.style.display = 'flex'; });
+    document.getElementById('noticeLoginBtn').addEventListener('click', () => {
+      noticeModal.style.display = 'none';
+      openLoginModalFresh();
+    });
     document.getElementById('noticeSignupBtn').addEventListener('click', () => { noticeModal.style.display = 'none'; signupModal.style.display = 'flex'; });
     document.getElementById('noticeCancelBtn').addEventListener('click', () => { noticeModal.style.display = 'none'; pendingGame = null; pendingMovie = null; pendingMovieShouldPlay = false; });
     passwordMigrationSaveBtn?.addEventListener('click', async () => {
@@ -8145,7 +8346,7 @@
       } finally {
         if (passwordMigrationSaveBtn && passwordMigrationModal?.style.display === 'flex') {
           passwordMigrationSaveBtn.disabled = false;
-          passwordMigrationSaveBtn.textContent = 'Save New Password';
+          passwordMigrationSaveBtn.textContent = 'Save Game password';
         }
       }
     });
@@ -14663,6 +14864,7 @@
         if (sendCardModal) sendCardModal.style.display = 'none';
         closeInvBlookModal();
         loginModal.style.display = 'none';
+        resetLoginWizard();
         signupModal.style.display = 'none';
         noticeModal.style.display = 'none';
         closeMovieInfoModal();
