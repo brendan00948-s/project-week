@@ -82,10 +82,25 @@
   <script>
     (function () {
       const MOVIE_ROUTE_CACHE_KEY = "movieRouteCacheV2";
+      const MAX_CATEGORY_ID = 999;
+      const MAX_MOVIE_ID = 999999;
       const backBtn = document.getElementById("backBtn");
       const playerShell = document.getElementById("playerShell");
       const statusMessage = document.getElementById("statusMessage");
       const params = new URLSearchParams(window.location.search);
+      const toBoundedPositiveInt = (value, max) => {
+        const n = Number.parseInt(value, 10);
+        if (!Number.isFinite(n) || n < 0 || n > max) return null;
+        return n;
+      };
+      const toCategoryPart = (value) => {
+        const n = toBoundedPositiveInt(value, MAX_CATEGORY_ID);
+        return n === null ? null : String(n).padStart(3, "0");
+      };
+      const toMoviePart = (value) => {
+        const n = toBoundedPositiveInt(value, MAX_MOVIE_ID);
+        return n === null ? null : String(n).padStart(6, "0");
+      };
       const pathParts = window.location.pathname.split("/").filter(Boolean);
       const marker = pathParts.findIndex((part) => part.toLowerCase() === "movie");
       const routeYear = marker >= 0 ? String(pathParts[marker + 1] || "").trim() : "";
@@ -99,8 +114,27 @@
       if (routeKey) {
         try {
           const parsed = JSON.parse(localStorage.getItem(MOVIE_ROUTE_CACHE_KEY) || "{}");
-          if (parsed && typeof parsed === "object" && parsed[routeKey]) {
-            routeEntry = parsed[routeKey];
+          if (parsed && typeof parsed === "object") {
+            routeEntry = parsed[routeKey] || null;
+            if (!routeEntry) {
+              const normalizedCategory = toCategoryPart(routeCategoryId);
+              const normalizedMovie = toMoviePart(routeMovieId);
+              const normalizedKey = normalizedCategory && normalizedMovie
+                ? `${routeYear}/${normalizedCategory}/${normalizedMovie}`
+                : "";
+              if (normalizedKey && parsed[normalizedKey]) {
+                routeEntry = parsed[normalizedKey];
+              } else {
+                const catInt = toBoundedPositiveInt(routeCategoryId, MAX_CATEGORY_ID);
+                const movieInt = toBoundedPositiveInt(routeMovieId, MAX_MOVIE_ID);
+                const legacyKey = (catInt !== null && movieInt !== null)
+                  ? `${routeYear}/${catInt}/${movieInt}`
+                  : "";
+                if (legacyKey && parsed[legacyKey]) {
+                  routeEntry = parsed[legacyKey];
+                }
+              }
+            }
           }
         } catch (_) {}
       }

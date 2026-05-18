@@ -1552,49 +1552,183 @@
 
     /* History Page */
     .history-list {
-      max-width: 800px;
+      max-width: 980px;
       margin: 0 auto;
+      display: grid;
+      gap: 16px;
+    }
+    .history-stats {
+      max-width: 980px;
+      margin: 0 auto 14px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .history-stat {
+      background: linear-gradient(140deg, rgba(7, 15, 27, 0.92), rgba(18, 32, 54, 0.88));
+      border: 1px solid rgba(120, 176, 255, 0.25);
+      border-radius: 12px;
+      padding: 10px 12px;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+    }
+    .history-stat-label {
+      color: var(--text-secondary);
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .history-stat-value {
+      margin-top: 4px;
+      display: block;
+      font-size: 1.06rem;
+      font-weight: 800;
+      color: #f1f8ff;
     }
 
     .history-item {
-      display: flex;
-      align-items: center;
-      padding: 15px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 10px;
-      margin-bottom: 15px;
-      border: 1px solid rgba(42, 255, 158, 0.1);
+      display: grid;
+      grid-template-columns: 248px minmax(0, 1fr);
+      background: linear-gradient(160deg, rgba(7, 13, 24, 0.96), rgba(19, 31, 52, 0.9));
+      border-radius: 14px;
+      border: 1px solid rgba(96, 159, 255, 0.26);
       cursor: pointer;
-      transition: border-color 0.16s ease, transform 0.16s ease, background 0.16s ease;
+      transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+      overflow: hidden;
+      min-height: 138px;
+      box-shadow: 0 16px 34px rgba(0, 0, 0, 0.26);
     }
     .history-item:hover,
     .history-item:focus-visible {
-      border-color: rgba(42, 255, 158, 0.34);
-      background: rgba(42, 255, 158, 0.08);
-      transform: translateY(-1px);
+      border-color: rgba(86, 185, 255, 0.56);
+      transform: translateY(-2px);
+      box-shadow: 0 22px 44px rgba(0, 0, 0, 0.38);
     }
-
-    .history-item img {
-      width: 60px;
-      height: 40px;
-      border-radius: 6px;
-      margin-right: 15px;
+    .history-banner-wrap {
+      position: relative;
+      min-height: 138px;
+      background: #122035;
+    }
+    .history-banner {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
       object-fit: cover;
+      transform: scale(1.02);
     }
-
+    .history-banner-scrim {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(95deg, rgba(8, 13, 22, 0.12), rgba(8, 13, 22, 0.75));
+    }
+    .history-type-pill {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 2;
+      font-size: 0.67rem;
+      letter-spacing: 0.07em;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      text-transform: uppercase;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.32);
+    }
+    .history-type-pill.is-movie {
+      border-color: rgba(255, 103, 140, 0.52);
+      background: rgba(255, 82, 116, 0.22);
+    }
+    .history-type-pill.is-game {
+      border-color: rgba(52, 227, 167, 0.58);
+      background: rgba(22, 181, 130, 0.2);
+    }
     .history-info {
-      flex: 1;
+      min-width: 0;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 8px;
     }
-
+    .history-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
     .history-title {
-      font-size: 1rem;
-      font-weight: 700;
-      margin-bottom: 5px;
+      min-width: 0;
+      font-size: 1.04rem;
+      font-weight: 800;
+      color: #f4f9ff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-
-    .history-time {
-      font-size: 0.8rem;
+    .history-open-pill {
+      flex-shrink: 0;
+      font-size: 0.69rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-radius: 999px;
+      border: 1px solid rgba(127, 196, 255, 0.48);
+      color: #d9efff;
+      background: rgba(127, 196, 255, 0.12);
+      padding: 4px 10px;
+    }
+    .history-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
       color: var(--text-secondary);
+      font-size: 0.78rem;
+    }
+    .history-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .history-route-pill {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.75rem;
+      color: #bfe2ff;
+      background: rgba(60, 140, 255, 0.13);
+      border: 1px solid rgba(95, 174, 255, 0.24);
+      border-radius: 8px;
+      padding: 4px 8px;
+      width: fit-content;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .history-empty {
+      max-width: 980px;
+      margin: 0 auto;
+      text-align: center;
+      color: var(--text-secondary);
+      padding: 28px 18px;
+      border-radius: 14px;
+      border: 1px dashed rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.03);
+    }
+    @media (max-width: 760px) {
+      .history-stats {
+        grid-template-columns: 1fr;
+      }
+      .history-item {
+        grid-template-columns: 1fr;
+      }
+      .history-banner-wrap {
+        min-height: 150px;
+      }
     }
 
     /* Shop Page — base (inventory etc. may reuse .pack-card legacy) */
@@ -5994,6 +6128,11 @@
     <div class="page" id="history-page">
       <div class="page-content">
         <h2 class="page-title font-titan-header">History</h2>
+        <div class="history-stats" id="history-stats">
+          <div class="history-stat"><span class="history-stat-label">Total</span><strong class="history-stat-value">0</strong></div>
+          <div class="history-stat"><span class="history-stat-label">Games</span><strong class="history-stat-value">0</strong></div>
+          <div class="history-stat"><span class="history-stat-label">Movies</span><strong class="history-stat-value">0</strong></div>
+        </div>
         <div class="history-list" id="play-history-list">
           <!-- History items will be added here -->
         </div>
@@ -6994,6 +7133,7 @@
     const playCount = document.getElementById('play-count');
     const friendCount = document.getElementById('friend-count');
     const playHistoryList = document.getElementById('play-history-list');
+    const historyStatsBar = document.getElementById('history-stats');
     const shopPacks = document.getElementById('shop-packs');
     const shopBanners = document.getElementById('shop-banners');
     const inventoryContainer = document.getElementById('inventory-container');
@@ -7845,15 +7985,43 @@
       }
     }
 
+    function formatCategoryRouteId(value) {
+      const n = toBoundedPositiveInt(value, MAX_MOVIE_CATEGORY_ID);
+      if (n === null) return null;
+      return String(n).padStart(3, '0');
+    }
+
+    function formatMovieRouteId(value) {
+      const n = toBoundedPositiveInt(value, MAX_MOVIE_KEY_ID);
+      if (n === null) return null;
+      return String(n).padStart(6, '0');
+    }
+
+    function formatGameRouteKey(value) {
+      const n = toBoundedPositiveInt(value, MAX_GAME_KEY_ID);
+      if (n === null) return null;
+      return String(n).padStart(6, '0');
+    }
+
+    function buildMovieWatchRouteUrl(year, categoryId, movieId) {
+      const safeYear = Number.parseInt(year, 10) || new Date().getFullYear();
+      const catPart = formatCategoryRouteId(categoryId);
+      const moviePart = formatMovieRouteId(movieId);
+      if (!catPart || !moviePart) return null;
+      return `https://macautraffic.com/movie/${encodeURIComponent(String(safeYear))}/${encodeURIComponent(catPart)}/${encodeURIComponent(moviePart)}`;
+    }
+
     function getMovieRouteParts(movie) {
       const yearValue = Number.parseInt(movie?.releaseYear, 10);
       const year = Number.isFinite(yearValue) && yearValue >= 1900 ? yearValue : new Date().getFullYear();
       const categoryId = toBoundedPositiveInt(movie?.categoryId, MAX_MOVIE_CATEGORY_ID);
       const movieId = toBoundedPositiveInt(movie?.movieKey, MAX_MOVIE_KEY_ID);
+      const resolvedCategoryId = categoryId !== null ? categoryId : stableNumericKey(movie?.category || movie?.id || '', MAX_MOVIE_CATEGORY_ID);
+      const resolvedMovieId = movieId !== null ? movieId : stableNumericKey(movie?.id || movie?.title || '', MAX_MOVIE_KEY_ID);
       return {
         year: String(year),
-        categoryId: String(categoryId !== null ? categoryId : stableNumericKey(movie?.category || movie?.id || '', MAX_MOVIE_CATEGORY_ID)),
-        movieId: String(movieId !== null ? movieId : stableNumericKey(movie?.id || movie?.title || '', MAX_MOVIE_KEY_ID))
+        categoryId: formatCategoryRouteId(resolvedCategoryId) || '000',
+        movieId: formatMovieRouteId(resolvedMovieId) || '000000'
       };
     }
 
@@ -7884,7 +8052,7 @@
       if (!resolvedMovieUrl) return null;
       const routeParts = getMovieRouteParts(movie);
       cacheMovieRouteData(movie, resolvedMovieUrl, routeParts);
-      return `https://macautraffic.com/movie/${encodeURIComponent(routeParts.year)}/${encodeURIComponent(routeParts.categoryId)}/${encodeURIComponent(routeParts.movieId)}`;
+      return buildMovieWatchRouteUrl(routeParts.year, routeParts.categoryId, routeParts.movieId);
     }
 
     function getRequestedMovieIdFromUrl() {
@@ -9061,8 +9229,9 @@
         const year = toBoundedPositiveInt(entry.releaseYear, 9999);
         const cat = toBoundedPositiveInt(entry.categoryId, MAX_MOVIE_CATEGORY_ID);
         const mid = toBoundedPositiveInt(entry.movieKey, MAX_MOVIE_KEY_ID);
-        if (year !== null && cat !== null && mid !== null) {
-          window.location.assign(`https://macautraffic.com/movie/${year}/${cat}/${mid}`);
+        const movieRouteUrl = buildMovieWatchRouteUrl(year, cat, mid);
+        if (movieRouteUrl) {
+          window.location.assign(movieRouteUrl);
         }
         return;
       }
@@ -9076,23 +9245,77 @@
     async function loadPlayHistory(userId) {
       try {
         const playsQuery = query(collection(db, "plays"), where("userId", "==", userId), orderBy("timestamp", "desc"), limit(25));
-        const unsubscribe = onSnapshot(playsQuery, (snapshot) => {
+        onSnapshot(playsQuery, (snapshot) => {
           playHistoryList.innerHTML = '';
-          if (snapshot.empty) { playHistoryList.innerHTML = '<p>No history yet</p>'; return; }
-          snapshot.forEach(doc => {
+          let totalEntries = 0;
+          let gameEntries = 0;
+          let movieEntries = 0;
+          if (snapshot.empty) {
+            if (historyStatsBar) {
+              historyStatsBar.innerHTML = `
+                <div class="history-stat"><span class="history-stat-label">Total</span><strong class="history-stat-value">0</strong></div>
+                <div class="history-stat"><span class="history-stat-label">Games</span><strong class="history-stat-value">0</strong></div>
+                <div class="history-stat"><span class="history-stat-label">Movies</span><strong class="history-stat-value">0</strong></div>
+              `;
+            }
+            playHistoryList.innerHTML = '<div class="history-empty">No history yet. Start a game or watch a movie to build your activity timeline.</div>';
+            return;
+          }
+          snapshot.forEach((doc) => {
             const data = doc.data();
+            totalEntries += 1;
             const timestamp = data.timestamp?.toDate ? data.timestamp.toDate() : new Date(data.timestamp);
             const formattedTime = timestamp.toLocaleString();
             const type = String(data.entryType || data.itemType || 'game').toLowerCase() === 'movie' ? 'movie' : 'game';
+            if (type === 'movie') movieEntries += 1;
+            else gameEntries += 1;
             const title = type === 'movie'
               ? String(data.movieTitle || data.gameTitle || 'Movie')
               : String(data.gameTitle || data.movieTitle || 'Game');
-            const art = String(type === 'movie' ? (data.movieBanner || data.gameImage) : data.gameImage || '').trim() || 'https://placehold.co/60x40';
+            const art = String(type === 'movie'
+              ? (data.movieBanner || data.gameImage || '')
+              : (data.gameImage || data.movieBanner || '')
+            ).trim() || 'https://placehold.co/640x360/0f1f37/8dc8ff?text=History+Banner';
             const historyItem = document.createElement('div');
             historyItem.className = 'history-item';
             historyItem.setAttribute('role', 'button');
             historyItem.setAttribute('tabindex', '0');
-            historyItem.innerHTML = `<img src="${escapeHtml(art)}" alt="${escapeHtml(title)}" loading="lazy" decoding="async"><div class="history-info"><div class="history-title">${escapeHtml(title)} <span style="font-size:0.66rem;margin-left:6px;padding:2px 6px;border-radius:999px;background:rgba(42,255,158,0.14);color:var(--neon-green);text-transform:uppercase;">${type}</span></div><div class="history-time">${formattedTime}</div></div>`;
+            const movieRouteLabel = (type === 'movie')
+              ? (() => {
+                  const year = Number.parseInt(data.releaseYear, 10) || new Date().getFullYear();
+                  const categoryPart = formatCategoryRouteId(data.categoryId) || '000';
+                  const moviePart = formatMovieRouteId(data.movieKey) || '000000';
+                  return `/${year}/${categoryPart}/${moviePart}`;
+                })()
+              : null;
+            const gameRouteLabel = type === 'game'
+              ? (() => {
+                  const gamePart = formatGameRouteKey(data.gameKey);
+                  if (gamePart) return `Game #${gamePart}`;
+                  return String(data.gameId || '').trim() ? 'Open game details' : 'Game entry';
+                })()
+              : null;
+            const routeLabel = movieRouteLabel || gameRouteLabel || 'Open entry';
+            const actionLabel = type === 'movie' ? 'Watch' : 'Play';
+            const typeLabel = type === 'movie' ? 'Movie' : 'Game';
+            historyItem.innerHTML = `
+              <div class="history-banner-wrap">
+                <img class="history-banner" src="${escapeHtml(art)}" alt="${escapeHtml(title)} banner" loading="lazy" decoding="async">
+                <div class="history-banner-scrim"></div>
+                <span class="history-type-pill ${type === 'movie' ? 'is-movie' : 'is-game'}">${typeLabel}</span>
+              </div>
+              <div class="history-info">
+                <div class="history-title-row">
+                  <div class="history-title">${escapeHtml(title)}</div>
+                  <div class="history-open-pill">${actionLabel}</div>
+                </div>
+                <div class="history-meta">
+                  <span><i class="fas fa-clock"></i>${escapeHtml(formattedTime)}</span>
+                  <span><i class="fas fa-link"></i>${escapeHtml(routeLabel)}</span>
+                </div>
+                <div class="history-route-pill">${escapeHtml(routeLabel)}</div>
+              </div>
+            `;
             const open = () => openHistoryEntry(data);
             historyItem.addEventListener('click', open);
             historyItem.addEventListener('keydown', (event) => {
@@ -9103,6 +9326,13 @@
             });
             playHistoryList.appendChild(historyItem);
           });
+          if (historyStatsBar) {
+            historyStatsBar.innerHTML = `
+              <div class="history-stat"><span class="history-stat-label">Total</span><strong class="history-stat-value">${totalEntries}</strong></div>
+              <div class="history-stat"><span class="history-stat-label">Games</span><strong class="history-stat-value">${gameEntries}</strong></div>
+              <div class="history-stat"><span class="history-stat-label">Movies</span><strong class="history-stat-value">${movieEntries}</strong></div>
+            `;
+          }
         });
       } catch(e) { console.error(e); }
     }
@@ -12715,8 +12945,9 @@
           const year = toBoundedPositiveInt(btn.dataset.year, 9999);
           const cat = toBoundedPositiveInt(btn.dataset.cat, MAX_MOVIE_CATEGORY_ID);
           const mKey = toBoundedPositiveInt(btn.dataset.mkey, MAX_MOVIE_KEY_ID);
-          if (year !== null && cat !== null && mKey !== null) {
-            window.location.assign(`https://macautraffic.com/movie/${year}/${cat}/${mKey}`);
+          const movieRouteUrl = buildMovieWatchRouteUrl(year, cat, mKey);
+          if (movieRouteUrl) {
+            window.location.assign(movieRouteUrl);
           }
           return;
         }
