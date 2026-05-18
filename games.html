@@ -6687,7 +6687,7 @@
         </p>
         <div id="loginWizardStep1">
           <div class="login-step-pill">Step 1 of 2 — Your email</div>
-          <input type="email" id="loginEmail" class="auth-input" placeholder="Email you used when you signed up" autocomplete="username">
+          <input type="email" id="loginEmail" class="auth-input" placeholder="Email for your Game Universe account" autocomplete="username">
           <button type="button" id="loginEmailNextBtn" class="auth-btn">Continue</button>
         </div>
         <div id="loginWizardStep2" style="display: none;">
@@ -6730,9 +6730,9 @@
     <!-- Password Migration Modal -->
     <div id="passwordMigrationModal" class="auth-modal">
       <div class="auth-modal-content">
-        <h3><i class="fas fa-shield-alt"></i> One quick update for your account</h3>
+        <h3><i class="fas fa-shield-alt"></i> Security update for your account</h3>
         <p style="font-size:0.8rem;color:var(--text-secondary);line-height:1.5;text-align:left;margin-bottom:12px;">
-          We’ve improved how logins work on <strong>Game Universe</strong>. Please choose the <strong>new password you want to use from now on</strong> for this website. It replaces the password from when you first created your account. After you save, <strong>use only this new password</strong> the next time you sign in — including if you open the site on another device.
+          <strong>For everyone’s safety</strong>, Game Universe needs you to choose a <strong>new password</strong> you’ll use from now on when you visit this site. Please enter it twice to confirm. After you save, <strong>sign in with this new password</strong> next time — on this device or any other.
         </p>
         <input type="password" id="passwordMigrationNew" class="auth-input" placeholder="New password (at least 6 characters)">
         <input type="password" id="passwordMigrationConfirm" class="auth-input" placeholder="Type the new password again">
@@ -8102,11 +8102,11 @@
     function setLoginWizardPasswordHint(path) {
       if (!loginWizardHint) return;
       if (path === 'firestore') {
-        loginWizardHint.innerHTML = 'Use the <strong>password you already use on Game Universe</strong> (the one you picked after any past update, or the same one you use in <strong>Settings</strong> if you changed it there).';
+        loginWizardHint.innerHTML = 'Use the <strong>password you already use on Game Universe</strong> (including if you last changed it in <strong>Settings</strong>).';
       } else if (path === 'auth_first') {
-        loginWizardHint.innerHTML = 'Use the <strong>password you used when you first created this account</strong>. After you sign in, we’ll ask you <strong>once</strong> to choose a <strong>new password for this site</strong>. After that, <strong>always use the new one</strong> when you come back — your very first password won’t work anymore once you’ve saved the new one.';
+        loginWizardHint.innerHTML = 'Use the <strong>password you already use for this Game Universe account</strong>. Because of a <strong>security update</strong>, after you’re in we’ll ask you <strong>once</strong> to pick a <strong>new password</strong> you’ll keep using from then on.';
       } else {
-        loginWizardHint.innerHTML = 'Enter the <strong>password for this account</strong>. If you still need to finish the one-time update we mentioned, use the <strong>password from when you signed up</strong> first; we’ll walk you through picking a new site password right after.';
+        loginWizardHint.innerHTML = 'Enter the <strong>password for this Game Universe account</strong>. If a <strong>security update</strong> is still waiting on your account, use the password you <strong>already use here</strong> first — we’ll guide you through the next step right after you sign in.';
       }
     }
 
@@ -8318,7 +8318,7 @@
           updatedAt: serverTimestamp()
         }, { merge: true });
         hidePasswordMigrationModal();
-        showNotification('All set! Use your new password next time you sign in to Game Universe.', 'success');
+        showNotification('All set! After this security step, use your new password whenever you sign in to Game Universe.', 'success');
       } catch (error) {
         const code = String(error?.code || '');
         if (code.includes('requires-recent-login')) {
