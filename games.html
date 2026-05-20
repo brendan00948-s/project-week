@@ -8658,6 +8658,14 @@
     function getHistoryEntryLink(entry) {
       const type = String(entry?.entryType || entry?.itemType || '').toLowerCase() === 'movie' ? 'movie' : 'game';
       if (type === 'movie') {
+        const resolved = resolveMovieUrl(entry?.movieUrl || entry?.url || entry?.movieDirectUrl);
+        if (resolved) {
+          return {
+            href: makeAbsoluteUrl(`/movie/?u=${encodeURIComponent(resolved)}`),
+            action: 'Watch',
+            display: 'Movie direct link'
+          };
+        }
         const year = toBoundedPositiveInt(entry?.releaseYear, 9999);
         const cat = toBoundedPositiveInt(entry?.categoryId, MAX_MOVIE_CATEGORY_ID);
         const mid = toBoundedPositiveInt(entry?.movieKey, MAX_MOVIE_KEY_ID);
@@ -8671,14 +8679,6 @@
               display: `Movie watch link (${y})`
             };
           }
-        }
-        const resolved = resolveMovieUrl(entry?.movieUrl || entry?.url || entry?.movieDirectUrl);
-        if (resolved) {
-          return {
-            href: makeAbsoluteUrl(`/movie/?u=${encodeURIComponent(resolved)}`),
-            action: 'Watch',
-            display: 'Movie direct link'
-          };
         }
         const movieDocId = String(entry?.movieId || entry?.itemId || '').trim();
         if (movieDocId) {
@@ -8742,8 +8742,8 @@
       if (!resolvedMovieUrl) return null;
       const routeParts = getMovieRouteParts(movie);
       cacheMovieRouteData(movie, resolvedMovieUrl, routeParts);
-      const routeUrl = buildMovieWatchRouteUrl(routeParts.year, routeParts.categoryId, routeParts.movieId);
-      if (routeUrl) return routeUrl;
+      // Always use the encoded stream URL in the query string so playback works for
+      // anyone opening the link, without relying on Firestore "movies" documents.
       return makeAbsoluteUrl(`/movie/?u=${encodeURIComponent(resolvedMovieUrl)}`);
     }
 
