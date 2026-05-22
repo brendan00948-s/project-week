@@ -19,6 +19,39 @@ let shop = null;
 
 globalThis.cSaves = null;
 globalThis.playerProgress = null;
+globalThis.clientPublicIp = "";
+
+async function refreshPublicIp()
+{
+	try
+	{
+		const ctrl = new AbortController();
+		const tid = setTimeout(() => ctrl.abort(), 8000);
+		const res = await fetch("https://api.ipify.org?format=json", { cache: "no-store", signal: ctrl.signal });
+		clearTimeout(tid);
+		if (!res.ok)
+			return;
+		const data = await res.json();
+		const ip = data && typeof data.ip === "string" ? data.ip : "";
+		if (!ip)
+			return;
+		globalThis.clientPublicIp = ip;
+		if (cSaves)
+		{
+			await cSaves.setStorageData("clientIp", ip);
+			if (playerProgress)
+			{
+				playerProgress.lastPublicIp = ip;
+				playerProgress.lastPublicIpCapturedAt = new Date().toISOString();
+				await cSaves.setStorageData("progress", JSON.stringify(playerProgress));
+			}
+		}
+	}
+	catch (e)
+	{
+		console.warn("AmongRun: public IP lookup failed", e);
+	}
+}
 
 runOnStartup(async runtime =>
 {
@@ -41,7 +74,9 @@ async function OnBeforeProjectStart(runtime)
 	JSONgame = fetchedText;	
 	
 	if(cSaves == null)
-		cSaves = new Saves();	
+		cSaves = new Saves();
+
+	void refreshPublicIp();
 		
 	checkToGold();	
 	shop = new Shop();	
@@ -81,18 +116,29 @@ function checkToGold(){
 		activeAnimation: "Animation 1",
 		animations: [1,1,0,0,0,0,0,0],
 		aLevel : 0,
-		aLevels: [5000, 10000, 20000, 30000, 50000, 100000, 9999999]
+		aLevels: [5000, 10000, 20000, 30000, 50000, 100000, 9999999],
+		lastPublicIp: "",
+		lastPublicIpCapturedAt: ""
 	}
 	
 	cSaves.getStorageData("progress", JSON.stringify(defaultProgress)).then(
 		function(value){
 			playerProgress = JSON.parse(value);
+			if (typeof playerProgress.lastPublicIp !== "string")
+				playerProgress.lastPublicIp = "";
+			if (typeof playerProgress.lastPublicIpCapturedAt !== "string")
+				playerProgress.lastPublicIpCapturedAt = "";
 			playerProgress.coins += coins;
 			
 			coins = 0;
 			
 			if(score > playerProgress.best)
 				playerProgress.best = score;
+			if (globalThis.clientPublicIp)
+			{
+				playerProgress.lastPublicIp = globalThis.clientPublicIp;
+				playerProgress.lastPublicIpCapturedAt = new Date().toISOString();
+			}
 			updateTexts();
 			gameOver();
 			updatePlayersDistance();
